@@ -1,242 +1,41 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/slf0Dev/Ocerium_Project/main/Library.lua"))()
-Window = Library.Main("The Mimic","M")
-
-local Tab = Window.NewTab("Main")
+นี่คือข้อความที่พิมพ์จากรูปของคุณ:
 
 
-local Section = Tab.NewSection("เกมาก")
-local Section = Tab.NewSection("เกแท้")
-local Section = Tab.NewSection("เกโหด")
-local Section = Tab.NewSection("เกจัด")
-local Section = Tab.NewSection("เกจริง")
-local Section = Tab.NewSection("เกกาก")
-local Section = Tab.NewSection("โครตเก")
-local Section = Tab.NewSection("เกระดับโหด")
-local Section = Tab.NewSection("เกระดับโลก")
-local Section = Tab.NewSection("เกระดับตำนาน")
-local Section = Tab.NewSection("เกระดับพระเจ้า")
-local Section = Tab.NewSection("By Discord #Merrysubs4t")
+---
+
+ปรากฏการณ์ที่เกิดขึ้นในระบบโลก ดวงจันทร์ และดวงอาทิตย์
+
+1. ข้างขึ้น-ข้างแรม
+
+บนท้องฟ้ายามค่ำคืนจะเห็นดวงดาวต่างๆ มากมายรวมถึงดวงจันทร์ ซึ่งเป็นบริวารของโลก โดยดวงจันทร์จะปรากฏมีขนาดใหญ่ และสว่างมากเมื่อเทียบกับดาวต่างๆ เนื่องจากอยู่ใกล้โลก ถ้าเราสังเกตดวงจันทร์ในแต่ละคืน จะพบว่าในเวลาเดียวกันของทุกคืน ตำแหน่งดวงจันทร์บนท้องฟ้าจะไม่อยู่ที่เดิม และส่วนสว่างหรือรูปร่างของดวงจันทร์จะไม่เหมือนเดิม ปรากฏการณ์ที่เห็นดวงจันทร์มีเสี้ยวสว่างแตกต่างกัน เรียกว่า ข้างขึ้น-ข้างแรม หรือ ดิถีจันทร์ (Phases of the Moon)
+
+การที่ดวงจันทร์โคจรรอบโลกทำให้บนโลกเห็นแสงสะท้อนจากดวงจันทร์แตกต่างกัน โดยดวงจันทร์ใช้เวลาในการโคจร 29.5 วัน การที่เราสังเกตเห็นดวงจันทร์สว่างเต็มดวง แล้วส่วนสว่างค่อยๆ ลดลงมืดทั้งดวง เรียกช่วงดังกล่าวว่า ข้างแรม (waning) วันที่ดวงจันทร์มืดทั้งดวง เรียก วันแรม 15 ค่ำ หรือ วันแรก 14 ค่ำ หรือ จันทร์ดับ (new moon) ซึ่งเป็นวันที่ดวงจันทร์อยู่ระหว่างโลกกับดวงอาทิตย์ หลังจากนั้นดวงจันทร์จะค่อยๆ สว่างจนเต็มดวงอีกครั้ง เรียกช่วงว่า ข้างขึ้น (waxing) โดยในวันที่ดวงจันทร์สว่างเต็มดวง ขึ้น 15 ค่ำ หรือเรียกว่า จันทร์เพ็ญ (full moon) ซึ่งเป็นวันที่ดวงจันทร์โคจรมาอยู่ด้านตรงข้ามกับดวงอาทิตย์ ส่วนวันที่ดวงจันทร์เคลื่อนที่ทำมุมฉากกับโลกและดวงอาทิตย์ จะทำให้เราเห็นดวงจันทร์สว่างครึ่งดวง เรียก วันแรม 8 ค่ำ หรือ ขึ้น 8 ค่ำ
+
+นี่คือข้อความที่พิมพ์จากรูปของคุณ:
 
 
-local Tab = Window.NewTab("Book1ch1")
+---
+
+2. น้ำขึ้น-น้ำลง
+
+ปรากฏการณ์น้ำขึ้นน้ำลงเป็นผลมาจากแรงโน้มถ่วงที่กระทำระหว่างโลกและดวงจันทร์ ซึ่งมีค่าไม่เท่ากันในแต่ละตำแหน่งบนพื้นผิวโลก เรียกว่า แรงไทดัล (Tidal force) หรือแรงน้ำขึ้นน้ำลง ด้วยเหตุนี้เอง น้ำ ซึ่งเป็นองค์ประกอบ 2 ใน 3 ของพื้นโลก และเป็นของเหลวที่เคลื่อนที่ได้ จึงแสดงผลกระทบจากแรงโน้มถ่วงของดวงจันทร์ให้เห็นอย่างเด่นชัดขึ้น เกิดเป็นปรากฏการณ์น้ำขึ้นน้ำลง
+
+น้ำที่อยู่บนโลกใกล้กับดวงจันทร์จะถูกแรงดึงดูดเข้าไปหาดวงจันทร์มากกว่าน้ำที่อยู่อีกฝั่งโลกหนึ่ง ทำให้ฝั่งที่อยู่ใกล้กับดวงจันทร์เกิดปรากฏการณ์ น้ำขึ้น (High tide) ในขณะที่น้ำขึ้น ณ บริเวณที่อยู่ใกล้และไกลที่สุดของดวงจันทร์ จะเกิด น้ำลง (Low tide) ณ บริเวณกึ่งกลางระหว่างจุดน้ำขึ้นทั้งสอง การที่โลกมีการหมุนรอบตัวเองทำให้ด้านที่โลกหันเข้าหาดวงจันทร์และด้านที่โลกหันออกจากดวงจันทร์มีการเปลี่ยนแปลงในรอบ 1 วัน จึงทำให้เกิดน้ำขึ้นและน้ำลงในแต่ละบริเวณประมาณ 2 ครั้งต่อวัน
+
+หากเราเฝ้าสังเกตน้ำขึ้นน้ำลงประมาณ 1 เดือน จะพบว่า วันข้างแรม 14 ค่ำ หรือ 15 ค่ำ และวันข้างขึ้น 15 ค่ำ ระดับน้ำทะเลจะสูงสุด เพราะแรงไทดัลจากดวงอาทิตย์เสริมแรงไทดัลจากดวงจันทร์ ส่วนใน วันข้างแรม 8 ค่ำ และข้างขึ้น 8 ค่ำ น้ำทะเลจะขึ้นต่ำสุด เพราะแรงไทดัลจากดวงจันทร์อาจหักล้างด้วยแรงไทดัลจากดวงอาทิตย์ วันที่น้ำทะเลมีการขึ้นและลงสูงสุด เรียกว่า วันน้ำเกิด (Spring tide) ส่วนวันที่น้ำทะเลมีการขึ้นหรือลงน้อย เรียกว่า วันน้ำตาย (Neap tide)
+
+นี่คือข้อความที่พิมพ์จากรูปของคุณ:
 
 
-local Section = Tab.NewSection("Chapter 1")
-local Button = Section.NewButton("Part 1",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(3507.028564453125, 43.13663864135742, -1541.9735107421875)
-end)
-local Button = Section.NewButton("Part 2",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1272.7239990234375, 200.04153442382812, -2537.25)
-end)
+---
 
-local Tab = Window.NewTab("Book1ch2")
+เราจะสังเกตเห็นดวงอาทิตย์ขึ้นและตกที่บริเวณรอยต่อระหว่างท้องฟ้าและพื้นดินหรือพื้นน้ำ เราเรียกบริเวณรอยต่อนั้นว่า ขอบฟ้า (Horizon) เราเรียกบริเวณที่ดวงอาทิตย์ขึ้นจากขอบฟ้าว่า ทิศตะวันออก และเราเรียกบริเวณที่ดวงอาทิตย์ลับขอบฟ้าว่า ทิศตะวันตก เนื่องจากโลกหมุนรอบตัวเองไปในทิศทางเดียวกับการโคจรรอบดวงอาทิตย์ เราจึงอาจกล่าวได้ว่าทิศที่ดวงอาทิตย์หมุนไปเป็นทิศตะวันออกกำหนดทิศที่อยู่ตรงข้ามกับทิศตะวันออกเป็นทิศตะวันตก ดังนั้นขณะที่โลกหมุนรอบตัวเอง ทิศจะไปกับผู้สังเกตบนโลกตลอดเวลา
 
 
-local Section = Tab.NewSection("Chapter 2")
-local Button = Section.NewButton("Part 1",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(64.74767303466797, 60.94379806518555, -1622.5250244140625)
-end)
-local Button = Section.NewButton("Part 2",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(232.6605987548828, 100.84130096435547, -595.3074951171875)
-end)
-local Button = Section.NewButton("Part 3",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1055.5179443359375, 78.26939392089844, -351.45831298828125)
-end)
+---
 
-local Tab = Window.NewTab("Book1ch3")
+ปรากฏการณ์เกิดจากโลกโคจรรอบดวงอาทิตย์
 
+โลกของเรามีลักษณะกลม โดยมีเส้น ศูนย์สูตร (Equator) ซึ่งเป็นเส้นสมมติแบ่งครึ่งโลกเป็นสองส่วนคือ ซีกโลกเหนือและซีกโลกใต้ จุดเหนือสุดเรียกว่า ขั้วโลกเหนือ (North Pole) จุดใต้สุดเรียกว่า ขั้วโลกใต้ (South Pole)
 
-local Section = Tab.NewSection("Chapter3")
-local Button = Section.NewButton("Part 1",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2416.63671875, -23.031118392944336, 2294.332275390625)
-end)
-local Button = Section.NewButton("Part 2",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(241.43087768554688, 33.24515914916992, 450.21502685546875)
-end)
-local Button = Section.NewButton("Part 3",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-654.1986694335938, 648.9832153320312, -1012.5780029296875)
-end)
-
-local Tab = Window.NewTab("Book1ch4")
-
-
-local Section = Tab.NewSection("Chapter 4 by KTollT")
-local Button = Section.NewButton("Auto win",function()
-loadstring(game:HttpGet('https://raw.githubusercontent.com/KTollT/KTollT/main/README.md'))()
-end)
-
-local Tab = Window.NewTab("Gamemode")
-
-
-local Section = Tab.NewSection("The witch Trial")
-local Button = Section.NewButton("Part 1",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2528.98681640625, 8.164044380187988, -1184.1917724609375)
-end)
-local Button = Section.NewButton("Part 2",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-444.71759033203125, 20.493558883666992, -1453.7325439453125)
-end)
-local Button = Section.NewButton("Part 3",function()
-game.Players.localPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(2690.99169921875, 9.297460556030273, 649.3221435546875)
-end)
-
-local Tab = Window.NewTab("Setting")
-
-
-local Section = Tab.NewSection("Hide GUI Press M")
-local Section = Tab.NewSection("Fullbrigth")
-local EnabledToggle = Section.NewToggle("ON/OFF",function(bool)
-if not _G.FullBrightExecuted then
-
-	_G.FullBrightEnabled = true
-
-	_G.NormalLightingSettings = {
-		Brightness = game:GetService("Lighting").Brightness,
-		ClockTime = game:GetService("Lighting").ClockTime,
-		FogEnd = game:GetService("Lighting").FogEnd,
-		GlobalShadows = game:GetService("Lighting").GlobalShadows,
-		Ambient = game:GetService("Lighting").Ambient
-	}
-
-	game:GetService("Lighting"):GetPropertyChangedSignal("Brightness"):Connect(function()
-		if game:GetService("Lighting").Brightness ~= 1 and game:GetService("Lighting").Brightness ~= _G.NormalLightingSettings.Brightness then
-			_G.NormalLightingSettings.Brightness = game:GetService("Lighting").Brightness
-			if not _G.FullBrightEnabled then
-				repeat
-					wait()
-				until _G.FullBrightEnabled
-			end
-			game:GetService("Lighting").Brightness = 1
-		end
-	end)
-
-	game:GetService("Lighting"):GetPropertyChangedSignal("ClockTime"):Connect(function()
-		if game:GetService("Lighting").ClockTime ~= 12 and game:GetService("Lighting").ClockTime ~= _G.NormalLightingSettings.ClockTime then
-			_G.NormalLightingSettings.ClockTime = game:GetService("Lighting").ClockTime
-			if not _G.FullBrightEnabled then
-				repeat
-					wait()
-				until _G.FullBrightEnabled
-			end
-			game:GetService("Lighting").ClockTime = 12
-		end
-	end)
-
-	game:GetService("Lighting"):GetPropertyChangedSignal("FogEnd"):Connect(function()
-		if game:GetService("Lighting").FogEnd ~= 786543 and game:GetService("Lighting").FogEnd ~= _G.NormalLightingSettings.FogEnd then
-			_G.NormalLightingSettings.FogEnd = game:GetService("Lighting").FogEnd
-			if not _G.FullBrightEnabled then
-				repeat
-					wait()
-				until _G.FullBrightEnabled
-			end
-			game:GetService("Lighting").FogEnd = 786543
-		end
-	end)
-
-	game:GetService("Lighting"):GetPropertyChangedSignal("GlobalShadows"):Connect(function()
-		if game:GetService("Lighting").GlobalShadows ~= false and game:GetService("Lighting").GlobalShadows ~= _G.NormalLightingSettings.GlobalShadows then
-			_G.NormalLightingSettings.GlobalShadows = game:GetService("Lighting").GlobalShadows
-			if not _G.FullBrightEnabled then
-				repeat
-					wait()
-				until _G.FullBrightEnabled
-			end
-			game:GetService("Lighting").GlobalShadows = false
-		end
-	end)
-
-	game:GetService("Lighting"):GetPropertyChangedSignal("Ambient"):Connect(function()
-		if game:GetService("Lighting").Ambient ~= Color3.fromRGB(178, 178, 178) and game:GetService("Lighting").Ambient ~= _G.NormalLightingSettings.Ambient then
-			_G.NormalLightingSettings.Ambient = game:GetService("Lighting").Ambient
-			if not _G.FullBrightEnabled then
-				repeat
-					wait()
-				until _G.FullBrightEnabled
-			end
-			game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
-		end
-	end)
-
-	game:GetService("Lighting").Brightness = 1
-	game:GetService("Lighting").ClockTime = 12
-	game:GetService("Lighting").FogEnd = 786543
-	game:GetService("Lighting").GlobalShadows = false
-	game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
-
-	local LatestValue = true
-	spawn(function()
-		repeat
-			wait()
-		until _G.FullBrightEnabled
-		while wait() do
-			if _G.FullBrightEnabled ~= LatestValue then
-				if not _G.FullBrightEnabled then
-					game:GetService("Lighting").Brightness = _G.NormalLightingSettings.Brightness
-					game:GetService("Lighting").ClockTime = _G.NormalLightingSettings.ClockTime
-					game:GetService("Lighting").FogEnd = _G.NormalLightingSettings.FogEnd
-					game:GetService("Lighting").GlobalShadows = _G.NormalLightingSettings.GlobalShadows
-					game:GetService("Lighting").Ambient = _G.NormalLightingSettings.Ambient
-				else
-					game:GetService("Lighting").Brightness = 1
-					game:GetService("Lighting").ClockTime = 12
-					game:GetService("Lighting").FogEnd = 786543
-					game:GetService("Lighting").GlobalShadows = false
-					game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
-				end
-				LatestValue = not LatestValue
-			end
-		end
-	end)
-end
-
-_G.FullBrightExecuted = true
-_G.FullBrightEnabled = not _G.FullBrightEnabled
-end,true)
-
-
-local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local TextButton = Instance.new("TextButton")
-local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-
---Properties:
-
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-Frame.Parent = ScreenGui
-Frame.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
-Frame.BackgroundTransparency = 0.500
-Frame.Position = UDim2.new(0.858712733, 0, 0.0237762257, 0)
-Frame.Size = UDim2.new(0.129513338, 0, 0.227972031, 0)
-
-TextButton.Parent = Frame
-TextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextButton.BackgroundTransparency = 1.000
-TextButton.Size = UDim2.new(1, 0, 1, 0)
-TextButton.Font = Enum.Font.SourceSans
-TextButton.Text = "ON/OFF"
-TextButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-TextButton.TextScaled = true
-TextButton.TextSize = 50.000
-TextButton.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-TextButton.TextStrokeTransparency = 0.000
-TextButton.TextWrapped = true
-TextButton.MouseButton1Down:Connect(function()
-	game:GetService("VirtualInputManager"):SendKeyEvent(true, "F6" , false , game)
-end)
-
-UITextSizeConstraint.Parent = TextButton
-UITextSizeConstraint.MaxTextSize = 50
-
-local Library = loadstring(game:HttpGet("loadstring(game:HttpGet('https://raw.githubusercontent.com/slf0Dev/Ocerium_Project/main/Library.lua'))()"))();
-
-local Window = Library.CreateLib("Example", "Sentinel")
-
-local Tab1 = Window:NewTab("Example")
-
-local Section1 = Tab1:NewSection("Example")
-
-Section1:NewKeybind("Toggle ui", "Toggle the ui yes", Enum.KeyCode.F6, function()
-    Library:ToggleUI()
-end)
+เมื่อเราขยายขอบเขตของโลกเข้าไปในอวกาศจะได้ทรงกลมสมมติครอบโลกอยู่ เรียกว่า ทรงกลมฟ้า (The Celestial Sphere) หากเราเลยขยายเส้นศูนย์สูตรออกไปยังทรงกลมฟ้า เราจะได้ เส้นศูนย์สูตรฟ้า (Celestial Equator) และหากเชื่อมต่อแนวขั้วโลกเหนือชี้ไปยังทรงกลมฟ้า จะเป็น ขั้วฟ้าเหนือ (North Celestial Pole; NCP) และเชื่อมต่อแนวขั้วโลกใต้ชี้ไปยังทรงกลมฟ้า จะเป็น ขั้วฟ้าใต้ (South Celestial Pole; SCP) ตามลำดับ
