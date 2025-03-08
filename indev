@@ -1,3 +1,4 @@
+_G.Thailand = true
 if not game:IsLoaded() then game.Loaded:Wait() end;
 Service = {
 	CoreGui = game:GetService("CoreGui"),
@@ -50,7 +51,10 @@ _G.Game = {
 
 	};
 	BuildABoat = {
-
+		autofarming = false,
+		stayatyvalue = 55,
+		aspeed = 1000,
+		waituntil = 20
 	}
 }
 _id = game.PlaceId;
@@ -612,7 +616,7 @@ function Library:CreateWindow(info)
 			if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 				local mouseDelta = UserInputService:GetMouseLocation() - startMouse
 				local newSize = startSize + UDim2.new(0, mouseDelta.X, 0, mouseDelta.Y)
-				newSize = UDim2.new(0, math.max(newSize.X.Offset, 500), 0, math.max(newSize.Y.Offset, 350))
+				newSize = UDim2.new(0, math.max(newSize.X.Offset, 540), 0, math.max(newSize.Y.Offset, 350))
 				Frame.Size = newSize
 			end
 		end
@@ -1470,6 +1474,7 @@ function Library:CreateWindow(info)
 				TextLabel_2.BackgroundTransparency = 1
 				TextLabel_2.BorderColor3 = Color3.fromRGB(0,0,0)
 				TextLabel_2.BorderSizePixel = 0
+				TextLabel_2.RichText = true
 				TextLabel_2.Size = UDim2.new(0, 200,0, 30)
 				TextLabel_2.Font = Enum.Font.GothamBold
 				TextLabel_2.Text = Title
@@ -1479,6 +1484,12 @@ function Library:CreateWindow(info)
 
 				UIPadding_3Sec.Parent = Section_2
 				UIPadding_3Sec.PaddingLeft = UDim.new(0,3)
+				local New = {}
+
+				function New:SetTitle(a)
+					TextLabel_2.Text = a
+				end
+				return New
 			end
 
 			function Main:CreateToggle(info)
@@ -2302,7 +2313,7 @@ function Library:CreateWindow(info)
 				local Desc = info.Desc or ''
 				local Icon = info.Icon or ''
 				local Label = background(Section_1, Title, Desc)
-				
+
 				local Image = Instance.new("ImageLabel")
 				local UICorner = Instance.new("UICorner")
 				UICorner.Parent = Image
@@ -2314,7 +2325,7 @@ function Library:CreateWindow(info)
 				Image.BackgroundTransparency = 1
 				Image.Image = gl(Icon)
 				Label.Frame.UIPadding.PaddingRight = UDim.new(0, 13)
-				
+
 				local New = {}
 
 				function New:SetTitle(a)
@@ -3336,7 +3347,37 @@ TabOptions = {
 	});
 }
 --About
-TabOptions.About:CreateSection({Title = tranlate("Overview", "ภาพรวม")})
+local valen = EmojiModule:GetEmoji("Valentine")
+local xm = EmojiModule:GetEmoji("Xmas")
+local normal = EmojiModule:GetEmoji("Chill")
+local hwa = EmojiModule:GetEmoji("Halloween")
+local newy = EmojiModule:GetEmoji("Newyear")
+TitleSS = tranlate("This is a Good Day, ", "วันนี้เป็นวันที่ดี, ")
+EmojiSS = normal
+rendersteped:Connect(function()
+	local currentDate = os.date("%m-%d")
+	if currentDate == "01-01" then
+		TitleSS = tranlate("Happy New Year Day, ", "สุขสันต์วันปีใหม่, ")
+		EmojiSS = newy
+	elseif currentDate == "02-14" then
+		TitleSS = tranlate("Happy Valentine Day, ", "สุขสันต์วันวาเลนไทน์, ")
+		EmojiSS = valen
+	elseif currentDate == "10-31" then
+		TitleSS = tranlate("Happy Halloween Day, ", "สุขสันต์วันฮาโลวีน, ")
+		EmojiSS = hwa
+	elseif currentDate == "12-25" then
+		TitleSS = tranlate("Merry Christmas, ", "สุขสันต์วันคริสมาส, ")
+		EmojiSS = xm
+	else
+		TitleSS = tranlate("This is a Good Day, ", "วันนี้เป็นวันที่ดี, ")
+		EmojiSS = normal
+	end
+end)
+Specialday = TabOptions.About:CreateSection({Title = TitleSS .. "<font color='rgb(0, 195, 255)'>" .. LocalPlayer.DisplayName .. "</font> " .. EmojiSS})
+rendersteped:Connect(function()
+	Specialday:SetTitle(TitleSS .. "<font color='rgb(0, 195, 255)'>" .. LocalPlayer.DisplayName .. "</font> " .. EmojiSS)
+	task.wait(1)
+end)
 TabOptions.About:CreateLabel({
 	Title = tranlate("What Games Does Fetching's Script <font color='rgb(0, 195, 255)'>Support</font> ?", "สคริปต์ของเรา<font color='rgb(0, 195, 255)'>สนับสนุน</font>เกมอะไรบ้าง ?"),
 	Desc = "- Fisch\n- Dead Rails\n- Build a Boat"
@@ -3421,7 +3462,7 @@ TabOptions.Settings:CreateToggle({
 })
 TabOptions.Settings:CreateToggle({
 	Title = tranlate("Transparensy", "พื้นหลังโปร่งใส"),
-	Desc = tranlate("Enable or Disable Shadow.", "การเปิดปิดเงาหลังหน้าต่างผู้ใช้"),
+	Desc = tranlate("Required Hight Device to Blur.", "ต้องการอุปกรณ์ที่มีประสิทธิภาพสูงเพื่อเบลอ"),
 	Value = true,
 	Callback = function(v)
 		pcall(function()
@@ -3459,6 +3500,9 @@ TabOptions.Client:CreateSlider({
 })
 TabOptions.Client:CreateSection({Title = tranlate("Jump", "กระโดด")})
 Character.Humanoid.UseJumpPower = false
+LocalPlayer.CharacterAdded:Connect(function()
+	Character.Humanoid.UseJumpPower = false
+end)
 TabOptions.Client:CreateSlider({
 	Title = tranlate("Jump Value", "ค่าความสูงการกระโดด"),
 	Desc = tranlate("Custom Jump Value", "ปรับแต่งค่าความสูงการกระโดดของคุณให้เหมาะสม"),
@@ -3997,13 +4041,7 @@ TabOptions.Server:CreateButton({
 TabOptions.Server:CreateButton({
 	Title = tranlate("Rejoin", "รีจอยน์"),
 	Callback = function()
-		if #Service.Players:GetPlayers() <= 1 then
-			LocalPlayer:Kick("Fetching's Script\nRejoining..")
-			wait()
-			Service.TeleportService:Teleport(_id, LocalPlayer)
-		else
-			Service.TeleportService:TeleportToPlaceInstance(_id, _jobid, LocalPlayer)
-		end
+		gametp(_id)
 	end})
 TabOptions.Server:CreateButton({
 	Title = tranlate("Clipboard JobId", "คัดลอกไอดีเซิร์ฟเวอร์"),
@@ -4207,10 +4245,104 @@ TabOptions.Executor:CreateButton({
 
 
 
-
-
 if BuildABoat then
-
+	function tpgame1(x, y, z, speed)
+		pcall(function()
+			local maxForce = Vector3.new(math.huge, math.huge, math.huge)
+			local velocity = Instance.new("BodyVelocity")
+			velocity.MaxForce = maxForce
+			velocity.Velocity = Vector3.new(0, 0, 0)
+			velocity.Parent = game.Players.LocalPlayer.Character.HumanoidRootPart
+			local targetPosition = Vector3.new(x, y, z)
+			local dochange = false
+			if not speed then dochange = true end
+			while true do
+				if not _G.Game.BuildABoat.autofarming then
+					velocity:Destroy()
+					break
+				end
+				local currentPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+				local direction = (targetPosition - currentPos).unit
+				local distance = (targetPosition - currentPos).magnitude
+				if dochange then
+					speed = _G.Game.BuildABoat.aspeed
+				end
+				local distanceCheck = speed/30
+				if distance >= distanceCheck then
+					velocity.Velocity = direction * speed
+				else
+					velocity:Destroy()
+					for i = 1, 20 do
+						game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(targetPosition)
+						game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+						task.wait()
+					end
+					break
+				end
+				wait()
+			end
+		end)
+	end
+	TabBuidABoat = {
+		['Automatic'] = General:CreateTab({
+			Title = tranlate("Automatic", "อัตโนมัติ"),
+			Icon = 108409511010308
+		});
+	}
+	local isfirstrun = true
+	TabBuidABoat.Automatic:CreateSection({Title = tranlate("Farming", "ฟาร์ม")})
+	Gold = TabBuidABoat.Automatic:CreateLabel({
+		Title = tranlate('<font color="rgb(255, 255, 127)">Golds </font>','<font color="rgb(255, 255, 127)">ทองคำ </font>') .. ": " .. PlayerGui.GoldGui.Frame.Amount.Text,
+	})
+	rendersteped:Connect(function()
+		Gold:SetTitle(tranlate('<font color="rgb(255, 255, 127)">Gold </font>','<font color="rgb(255, 255, 127)">ทองคำ </font>') .. ": " .. PlayerGui.GoldGui.Frame.Amount.Text)
+	end)
+	TabBuidABoat.Automatic:CreateToggle({
+		Title = tranlate("Automatic Coins", "ฟาร์มเหรียญทองอัตโนมัติ"),
+		Value =  _G.Game.BuildABoat.autofarming,
+		Callback = function(v)
+			_G.Game.BuildABoat.autofarming = v
+			SaveSettings()
+		end,
+	})
+	task.spawn(function()
+		while task.wait() do
+			pcall(function()
+				if _G.Game.BuildABoat.autofarming then
+					if Character:FindFirstChild("HumanoidRootPart") then
+						local water = game:GetService("Workspace").BoatStages.NormalStages.CaveStage1.Water
+						local waterp = water.Position
+						local lastwater = game:GetService("Workspace").BoatStages.NormalStages.CaveStage10.Water
+						local lastwaterp = lastwater.Position
+						local chest = game:GetService("Workspace").BoatStages.NormalStages.TheEnd.GoldenChest.Trigger
+						local success = pcall(function()
+							Character.HumanoidRootPart.CFrame = CFrame.new(waterp.x, waterp.y + _G.Game.BuildABoat.stayatyvalue, waterp.z)
+							tpgame1(lastwaterp.x, waterp.y + _G.Game.BuildABoat.stayatyvalue, lastwaterp.z, nil)
+							for i = 1, 5 do
+								Character.HumanoidRootPart.CFrame = CFrame.new(chest.Position.x, chest.Position.y + 20, chest.Position.z)
+								task.wait(0.05)
+								Character.HumanoidRootPart.CFrame = CFrame.new(chest.Position.x, chest.Position.y, chest.Position.z)
+								task.wait(0.05)
+							end
+							Character.HumanoidRootPart.CFrame = CFrame.new(chest.Position.x, chest.Position.y + 30, chest.Position.z)
+							task.wait(_G.Game.BuildABoat.waituntil)
+						end)
+					end
+				end
+			end)
+		end
+	end)
+	TabBuidABoat.Automatic:CreateSlider({
+		Title = tranlate("Farming Speed", "ความเร็วในการฟาร์ม"),
+		Min = 10,
+		Max = 1000,
+		Value = _G.Config.FPS,
+		Rounding = 0,
+		Callback = function(v)
+			_G.Game.BuildABoat.aspeed = v
+			SaveSettings()
+		end,
+	})
 end
 
 
