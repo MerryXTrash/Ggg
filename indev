@@ -43,6 +43,17 @@ _G.Config = {
 	CodeBlack = 'print("Hello, world")',
 	Click = false
 };
+_G.Game = {
+	Fisch = {
+
+	};
+	DeadRails = {
+
+	};
+	BuildABoat = {
+
+	}
+}
 _id = game.PlaceId;
 _jobid = game.JobId;
 _allplayers = Service.Players.NumPlayers;
@@ -71,6 +82,13 @@ elseif Service.UserInputService.KeyboardEnabled then
 else
 	_G.PC = true
 	print("Unknow : nil")
+end
+if _id == 537413528 then --Build
+	BuildABoat = true
+elseif _id == 16732694052 then --Fisch
+	Fisch = true
+elseif _id == 70876832253163 then -- Dead Rails
+	Deadrail = true
 end
 task.spawn(function()
 	local GC=getconnections or get_signal_cons
@@ -132,6 +150,48 @@ end
 DeleteSettings = function()
 	if isfile("Fetching'Script/Config" .. LocalPlayer.Name .. ".json") then
 		delfile("Fetching'Script/Config" .. LocalPlayer.Name .. ".json")
+	end
+end;
+function Game_LoadSettings()
+	if readfile and writefile and isfile and isfolder then
+		if not isfolder("Fetching'Script") then
+			makefolder("Fetching'Script")
+		end
+		if not isfolder("Fetching'Script/Game") then
+			makefolder("Fetching'Script/Game")
+		end
+		if not isfile("Fetching'Script/Game" .. LocalPlayer.Name .. ".json") then
+			writefile("Fetching'Script/Game" .. LocalPlayer.Name .. ".json", game:GetService("HttpService"):JSONEncode(_G.Game))
+		else
+			local Decode = game:GetService("HttpService"):JSONDecode(readfile("Fetching'Script/Game" .. LocalPlayer.Name .. ".json"))
+			for i,v in pairs(Decode) do
+				_G.Game[i] = v
+			end
+		end
+	else
+		return warn("Executor is Not Support")
+	end
+end
+function Game_SaveSettings()
+	if readfile and writefile and isfile and isfolder then
+		local configFile = "Fetching'Script/Game" .. LocalPlayer.Name .. ".json"
+		if not isfile(configFile) then
+			LoadSettings()
+		else
+			local Decode = game:GetService("HttpService"):JSONDecode(readfile(configFile))
+			local tablex = {}
+			for i,v in pairs(_G.Game) do
+				tablex[i] = v
+			end
+			writefile(configFile, game:GetService("HttpService"):JSONEncode(tablex))
+		end
+	else
+		return warn("Executor is Not Supported")
+	end
+end
+Game_DeleteSettings = function()
+	if isfile("Fetching'Script/Game" .. LocalPlayer.Name .. ".json") then
+		delfile("Fetching'Script/Game" .. LocalPlayer.Name .. ".json")
 	end
 end;
 checktable = function(config, _table)
@@ -486,14 +546,16 @@ if game:GetService("CoreGui"):FindFirstChild("Fetching") then
 	game:GetService("CoreGui"):FindFirstChild("Fetching"):Destroy()
 end
 Library = {}
-
+BlurFrameL = loadstring(game:HttpGet('https://raw.githubusercontent.com/aresZee7/aresLibrary/main/BlurFrame'))()
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Fetching"
 ScreenGui.IgnoreGuiInset = true
 ScreenGui.Parent = not game:GetService("RunService"):IsStudio() and game:GetService("CoreGui") or game:GetService("Players").LocalPlayer.PlayerGui
 
 function Library:CreateWindow(info)
-
+	local Transparency = info.Transparency
+	local MainColor = info.MainColor
+	local DropColor = info.DropColor
 	local U, Tw =
 		game:GetService("UserInputService"),
 	game:GetService("TweenService")
@@ -533,6 +595,34 @@ function Library:CreateWindow(info)
 			}):Play()
 		end)
 	end
+
+
+	local function Resize(DragFrame, Frame)
+		if not DragFrame or not Frame then return end -- ตรวจสอบว่ามีค่า DragFrame และ Frame หรือไม่
+		local resizing = false
+		local startSize, startMouse
+		DragFrame.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				resizing = true
+				startSize = Frame.Size
+				startMouse = Service.UserInputService:GetMouseLocation()
+			end
+		end)
+		Service.UserInputService.InputChanged:Connect(function(input)
+			if resizing and input.UserInputType == Enum.UserInputType.MouseMovement then
+				local mouseDelta = Service.UserInputService:GetMouseLocation() - startMouse
+				local newSize = startSize + UDim2.new(0, mouseDelta.X, 0, mouseDelta.Y)
+				newSize = UDim2.new(0, math.max(newSize.X.Offset, 480), 0, math.max(newSize.Y.Offset, 350))
+				Frame.Size = newSize
+			end
+		end)
+		Service.UserInputService.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				resizing = false
+			end
+		end)
+	end
+
 
 	local function gs(side, pl, pr)
 		if not side then
@@ -663,11 +753,11 @@ function Library:CreateWindow(info)
 		local UIPadding_2 = Instance.new("UIPadding")
 		local TextLabel_1 = Instance.new("TextLabel")
 		local Title_1 = Instance.new("TextLabel")
-		local UIGradient_2 = Instance.new("UIGradient")
 
 		ToggleDesc.Name = "ToggleDesc"
 		ToggleDesc.Parent = p
-		ToggleDesc.BackgroundColor3 = Color3.fromRGB(255,255,255)
+		ToggleDesc.BackgroundTransparency = Transparency
+		ToggleDesc.BackgroundColor3 = Color3.fromRGB(36, 39, 46)
 		ToggleDesc.BorderColor3 = Color3.fromRGB(0,0,0)
 		ToggleDesc.BorderSizePixel = 0
 		ToggleDesc.Size = UDim2.new(1, 0,0, 35)
@@ -727,9 +817,6 @@ function Library:CreateWindow(info)
 		Title_1.TextXAlignment = Enum.TextXAlignment.Left
 		Title_1.AutomaticSize = Enum.AutomaticSize.Y
 
-		UIGradient_2.Parent = ToggleDesc
-		UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(36, 39, 46)), ColorSequenceKeypoint.new(1, Color3.fromRGB(31, 34, 40))}
-
 		if d and d ~= "" then
 			TextLabel_1.Visible = true
 			TextLabel_1.Text = d
@@ -752,7 +839,7 @@ function Library:CreateWindow(info)
 
 	local Logo = info.Logo
 	local Keycode = info.Keycode
-
+	local Size = info.Size
 	local Background_1 = Instance.new("Frame")
 	local UICorner_1 = Instance.new("UICorner")
 	local UIStroke_1 = Instance.new("UIStroke")
@@ -763,6 +850,7 @@ function Library:CreateWindow(info)
 	local ImageLabel_1 = Instance.new("ImageLabel")
 	local TabFrame_1 = Instance.new("Frame")
 	local Shadow = Instance.new("ImageLabel")
+	local resize = Instance.new("Frame")
 
 	Background_1.Name = "Background"
 	Background_1.Parent = ScreenGui
@@ -771,8 +859,8 @@ function Library:CreateWindow(info)
 	Background_1.BorderColor3 = Color3.fromRGB(0,0,0)
 	Background_1.BorderSizePixel = 0
 	Background_1.Position = UDim2.new(0.5, 0,0.5, 0)
-	Background_1.Size = UDim2.new(0, 480,0, 350)
-	lak(Background_1)
+	Background_1.Size = Size
+	local BlurFrame2 = BlurFrameL:BlurFrame(Background_1)
 
 	UICorner_1.Parent = Background_1
 
@@ -780,6 +868,14 @@ function Library:CreateWindow(info)
 	UIStroke_1.Color = Color3.fromRGB(47,48,51)
 	UIStroke_1.Transparency = 0.3
 	UIStroke_1.Thickness = 3
+
+	resize.Parent = Background_1
+	resize.Size = UDim2.new(0, 50, 0, 50)
+	resize.Position = UDim2.new(1, -20, 1, -20)
+	resize.BackgroundTransparency = 1
+	resize.BorderSizePixel = 0
+
+	Resize(resize, Background_1)
 
 	Shadow.Parent = Background_1
 	Shadow.Name = "DropShadow"
@@ -793,7 +889,7 @@ function Library:CreateWindow(info)
 	Shadow.ZIndex = 0
 	Shadow.Image = "rbxassetid://8992230677"
 	Shadow.ImageColor3 = Color3.new(0, 0, 0)
-	Shadow.ImageTransparency = 0.2
+	Shadow.ImageTransparency = 0.4
 	Shadow.ResampleMode = Enum.ResamplerMode.Default
 	Shadow.ScaleType = Enum.ScaleType.Slice
 	Shadow.SliceScale = 1
@@ -808,11 +904,13 @@ function Library:CreateWindow(info)
 	Topbar_1.BorderColor3 = Color3.fromRGB(0,0,0)
 	Topbar_1.BorderSizePixel = 0
 	Topbar_1.Size = UDim2.new(1, 0,0, 50)
+	lak2(Topbar_1,Background_1)
 
 	Line_1.Name = "Line"
 	Line_1.Parent = Topbar_1
 	Line_1.AnchorPoint = Vector2.new(0, 1)
 	Line_1.BackgroundColor3 = Color3.fromRGB(54, 58, 69)
+	Line_1.BackgroundTransparency = Transparency
 	Line_1.BorderColor3 = Color3.fromRGB(0,0,0)
 	Line_1.BorderSizePixel = 0
 	Line_1.Position = UDim2.new(0, 0,1, 0)
@@ -853,7 +951,6 @@ function Library:CreateWindow(info)
 	local Profile = Instance.new("ImageLabel")
 	local UICornerProfile_1 = Instance.new("UICorner")
 	local UIStrokeProfile_1 = Instance.new("UIStroke")
-	local UIGradientProfile_1 = Instance.new("UIGradient")
 	local ProfileImage_1 = Instance.new("ImageLabel")
 
 	Profile.Name = "Profile"
@@ -873,13 +970,9 @@ function Library:CreateWindow(info)
 
 	UIStrokeProfile_1.Name = "UIStrokeProfile"
 	UIStrokeProfile_1.Parent = Profile
-	UIStrokeProfile_1.Color = Color3.fromRGB(255,255,255)
+	UIStrokeProfile_1.Color = Color3.fromRGB(54, 58, 69)
 	UIStrokeProfile_1.Thickness = 1.5
 
-	UIGradientProfile_1.Name = "UIGradientProfile"
-	UIGradientProfile_1.Parent = UIStrokeProfile_1
-	UIGradientProfile_1.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(56, 182, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 48, 255))}
-	UIGradientProfile_1.Rotation = 90
 
 	local UIPadding_2 = Instance.new("UIPadding")
 	local ScrollingFrame_1 = Instance.new("ScrollingFrame")
@@ -944,7 +1037,7 @@ function Library:CreateWindow(info)
 	Select_1.Size = UDim2.new(0, 33,0, 2)
 
 	UIGradient_5.Parent = Select_1
-	UIGradient_5.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(54, 180, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(1, 118, 255))}
+	UIGradient_5.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainColor), ColorSequenceKeypoint.new(1, DropColor)}
 
 	local Notification = Instance.new("Frame")
 	local UIListLayout_1 = Instance.new("UIListLayout")
@@ -1008,6 +1101,7 @@ function Library:CreateWindow(info)
 		Tab.Name = "Tab"
 		Tab.Parent = FrameTab_1
 		Tab.BackgroundColor3 = Color3.fromRGB(36, 39, 46)
+		Tab.BackgroundTransparency = Transparency
 		Tab.BorderColor3 = Color3.fromRGB(0,0,0)
 		Tab.BorderSizePixel = 0
 		Tab.Size = UDim2.new(0, 30,0, 30)
@@ -1030,13 +1124,14 @@ function Library:CreateWindow(info)
 		UIStroke_2.Parent = Tab_1
 		UIStroke_2.Color = Color3.fromRGB(255,255,255)
 		UIStroke_2.Thickness = 2
+		UIStroke_2.Transparency = Transparency
 
 		UIGradient_1.Parent = UIStroke_2
-		UIGradient_1.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(48, 163, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(7, 64, 255))}
+		UIGradient_1.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainColor), ColorSequenceKeypoint.new(1, DropColor)}
 		UIGradient_1.Rotation = 90
 
 		UIGradient_2.Parent = Tab_1
-		UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(48, 163, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(7, 64, 255))}
+		UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainColor), ColorSequenceKeypoint.new(1, DropColor)}
 
 		ImageLabel_2.Parent = Tab_1
 		ImageLabel_2.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -1089,6 +1184,7 @@ function Library:CreateWindow(info)
 		Line.BorderSizePixel = 0
 		Line.Position = UDim2.new(1, 0,1, 0)
 		Line.Size = UDim2.new(0, 2,1, 0)
+		Line.BackgroundTransparency = Transparency
 
 		ScrollingFrame_1Tab.Name = "ScrollingFrame"
 		ScrollingFrame_1Tab.Parent = TabFrame_1Tab
@@ -1140,7 +1236,7 @@ function Library:CreateWindow(info)
 		SelectTab.Size = UDim2.new(0, 2,0, 52)
 
 		UIGradient_3Tab.Parent = SelectTab
-		UIGradient_3Tab.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(54, 180, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(1, 118, 255))}
+		UIGradient_3Tab.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainColor), ColorSequenceKeypoint.new(1, DropColor)}
 
 		Title_1.Size = UDim2.new(0, Title_1.TextBounds.X + 10, 0, 20)
 
@@ -1209,6 +1305,7 @@ function Library:CreateWindow(info)
 			Tab_2.BorderColor3 = Color3.fromRGB(0,0,0)
 			Tab_2.BorderSizePixel = 0
 			Tab_2.Size = UDim2.new(0, 60,0, 50)
+			Tab_2.BackgroundTransparency = Transparency
 
 			UICorner_12.Parent = Tab_2
 			UICorner_12.CornerRadius = UDim.new(0,5)
@@ -1225,7 +1322,7 @@ function Library:CreateWindow(info)
 			UICorner_1.CornerRadius = UDim.new(0,8)
 
 			UIGradient_2.Parent = Tab_1
-			UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(48, 163, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(7, 64, 255))}
+			UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainColor), ColorSequenceKeypoint.new(1, DropColor)}
 			UIGradient_2.Rotation = 180
 
 			ImageLabel_1.Parent = Tab_1
@@ -1437,8 +1534,8 @@ function Library:CreateWindow(info)
 				UICorner_2.CornerRadius = UDim.new(1,0)
 
 				UIGradient_1.Parent = Frame_1
-				UIGradient_1.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(51, 175, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(6, 111, 255))}
-
+				UIGradient_1.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainColor), ColorSequenceKeypoint.new(1, DropColor)}
+				UIGradient_1.Rotation = -150
 				UIStroke_1.Parent = Frame_1
 				UIStroke_1.Color = Color3.fromRGB(106,130,146)
 				UIStroke_1.Thickness = 1.5
@@ -1458,7 +1555,7 @@ function Library:CreateWindow(info)
 						tw({v = UIStroke_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Transparency = 0}}):Play()
 					else
 						tw({v = Toggle.Frame.Title, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {TextTransparency = 0.5}}):Play()
-						tw({v = Frame_2, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.27, 0,0.5, 0), BackgroundColor3 = Color3.fromRGB(65, 65, 65)}}):Play()
+						tw({v = Frame_2, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Position = UDim2.new(0.27, 0,0.5, 0), BackgroundColor3 = Color3.fromRGB(54, 58, 69)}}):Play()
 						tw({v = Frame_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {BackgroundTransparency = 1}}):Play()
 						tw({v = UIStroke_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Transparency = 0.8}}):Play()
 					end
@@ -1570,13 +1667,13 @@ function Library:CreateWindow(info)
 				UICorner_2.CornerRadius = UDim.new(1,0)
 
 				UIGradient_1.Parent = Frame_1
-				UIGradient_1.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(43, 167, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 129, 255))}
+				UIGradient_1.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainColor), ColorSequenceKeypoint.new(1, DropColor)}
 
 				UICorner_3.Parent = BarValue_1
 				UICorner_3.CornerRadius = UDim.new(1,0)
 
 				UIGradient_2.Parent = BarValue_1
-				UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(43, 167, 255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 129, 255))}
+				UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, MainColor), ColorSequenceKeypoint.new(1, DropColor)}
 
 				Click_1.Name = "Click"
 				Click_1.Parent = ValueBar_1
@@ -2005,7 +2102,7 @@ function Library:CreateWindow(info)
 
 					UICorner_3.Parent = Item_1
 					UICorner_3.CornerRadius = UDim.new(0,6)
-					
+
 
 					TextLabel_1.Parent = Item_1
 					TextLabel_1.BackgroundColor3 = Color3.fromRGB(255,255,255)
@@ -2031,7 +2128,7 @@ function Library:CreateWindow(info)
 					end
 					local function hasselect()
 						tw({v = TextLabel_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {TextTransparency = 0}}):Play()
-						tw({v = Item_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {BackgroundTransparency = 0.3}}):Play()
+						tw({v = Item_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {BackgroundTransparency = 0.8}}):Play()
 					end
 
 					ClickItem.MouseButton1Click:Connect(function()
@@ -2196,34 +2293,24 @@ function Library:CreateWindow(info)
 				return New
 			end
 
-			function Main:Paragarp(info)
-				local Title = info.Title
-				local Desc = info.Desc or ''
-				local Image = info.Image
-				local Paragarp = background(Section_1, Title, Desc)
-				local New = {}
-
-				function New:SetTitle(a)
-					Paragarp.Frame.Title.Text = a
-				end
-
-				function New:SetDesc(a)
-					if a and a ~= '' then
-						Paragarp.Frame.Desc.Text = a
-						Paragarp.Frame.Desc.Visible = true
-					else
-						Paragarp.Frame.Desc.Visible = false
-					end
-				end
-			end
-
 			function Main:CreateLabel(info)
 				local Title = info.Title
 				local Desc = info.Desc or ''
+				local Icon = info.Icon or ''
 				local Label = background(Section_1, Title, Desc)
-
+				
+				local Image = Instance.new("ImageLabel")
+				local UICorner = Instance.new("UICorner")
+				UICorner.Parent = Image
+				UICorner.CornerRadius = UDim.new(0,6)
+				Image.Parent = Label
+				Image.AnchorPoint = Vector2.new(0, 0.5)
+				Image.Size = UDim2.new(0, 40, 0, 40)
+				Image.Position = UDim2.new(0.9, 0, 0.5, 0)
+				Image.BackgroundTransparency = 1
+				Image.Image = gl(Icon)
 				Label.Frame.UIPadding.PaddingRight = UDim.new(0, 13)
-
+				
 				local New = {}
 
 				function New:SetTitle(a)
@@ -2397,7 +2484,6 @@ function Library:CreateWindow(info)
 
 				local Textbox = Instance.new("Frame")
 				local UICorner_1 = Instance.new("UICorner")
-				local UIGradient_1 = Instance.new("UIGradient")
 				local Box_1 = Instance.new("Frame")
 				local ValueBox_1 = Instance.new("Frame")
 				local UICorner_2 = Instance.new("UICorner")
@@ -2410,7 +2496,8 @@ function Library:CreateWindow(info)
 
 				Textbox.Name = "Textbox"
 				Textbox.Parent = Section_1
-				Textbox.BackgroundColor3 = Color3.fromRGB(255,255,255)
+				Textbox.BackgroundColor3 = Color3.fromRGB(36, 39, 46)
+				Textbox.BackgroundTransparency = Transparency
 				Textbox.BorderColor3 = Color3.fromRGB(0,0,0)
 				Textbox.BorderSizePixel = 0
 				Textbox.Size = UDim2.new(1, 0,0, 65)
@@ -2419,8 +2506,6 @@ function Library:CreateWindow(info)
 				UICorner_1.Parent = Textbox
 				UICorner_1.CornerRadius = UDim.new(0,4)
 
-				UIGradient_1.Parent = Textbox
-				UIGradient_1.Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(36, 39, 46)), ColorSequenceKeypoint.new(1, Color3.fromRGB(31, 34, 40))}
 
 				Box_1.Name = "Box"
 				Box_1.Parent = Textbox
@@ -2705,6 +2790,7 @@ function Library:CreateWindow(info)
 				Discord.Name = "Discord"
 				Discord.Parent = Section_1
 				Discord.BackgroundColor3 = Color3.fromRGB(255,255,255)
+				Discord.BackgroundTransparency = Transparency
 				Discord.BorderColor3 = Color3.fromRGB(0,0,0)
 				Discord.BorderSizePixel = 0
 				Discord.Size = UDim2.new(1, 0,0, 50)
@@ -3066,13 +3152,13 @@ function Library:CreateWindow(info)
 
 		UICorner_1.Parent = Closeui
 		UICorner_1.CornerRadius = UDim.new(1,0)
-		
+
 
 		UIStroke_1.Parent = Closeui
 		UIStroke_1.Color = Color3.fromRGB(54, 58, 69)
 		UIStroke_1.Thickness = 4
 		UIStroke_1.Transparency = 0.7
-		
+
 		game:GetService("RunService").RenderStepped:Connect(function()
 			local fps = 1 / game:GetService("RunService").RenderStepped:Wait() -- คำนวณ FPS
 			if fps > 45 then
@@ -3111,24 +3197,47 @@ function Library:CreateWindow(info)
 		Click_1.TextSize = 14
 
 		lak2(Click_1, Closeui)
-
-		Click_1.MouseButton1Click:Connect(function()
-			tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.80, 0,0.80, 0)}}):Play()
-			delay(.016, function()
-				tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.9, 0,0.9, 0)}}):Play()
-			end)
-			Background_1.Visible = not Background_1.Visible
-		end)
-		Service.UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		local OpenUI = true
+		Service.UserInputService.InputBegan:Connect(function(input)
 			if input.KeyCode == Keycode then
+				if OpenUI then
+					OpenUI = false
+					Background_1.Visible = false
+					for i = 1,2 do
+						BlurFrame2[i]:Destroy()
+					end
+
+				else
+					OpenUI = true
+					Background_1.Visible = true
+					BlurFrame2 = BlurFrameL:BlurFrame(Background_1)
+				end
 				tw({v = Closeui, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {BackgroundColor3 = Color3.fromRGB(31, 34, 40)}}):Play()
 				tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.80, 0, 0.80, 0)}}):Play()
 				delay(0.016, function()
 					tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.9, 0, 0.9, 0)}}):Play()
 					tw({v = Closeui, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {BackgroundColor3 = Color3.fromRGB(36, 39, 46)}}):Play()
 				end)
-				Background_1.Visible = not Background_1.Visible
 			end
+		end)
+		Click_1.MouseButton1Click:Connect(function()
+			if OpenUI then
+				OpenUI = false
+				Background_1.Visible = false
+				for i = 1,2 do
+					BlurFrame2[i]:Destroy()
+				end
+			else
+				OpenUI = true
+				Background_1.Visible = true
+				BlurFrame2 = BlurFrameL:BlurFrame(Background_1)
+			end
+			tw({v = Closeui, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {BackgroundColor3 = Color3.fromRGB(31, 34, 40)}}):Play()
+			tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.80, 0, 0.80, 0)}}):Play()
+			delay(0.016, function()
+				tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.9, 0, 0.9, 0)}}):Play()
+				tw({v = Closeui, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {BackgroundColor3 = Color3.fromRGB(36, 39, 46)}}):Play()
+			end)
 		end)
 	end
 
@@ -3152,12 +3261,20 @@ Icons = {
 	cloud = 107927309418429,bookmark = 96315518803478,
 	location = 122781330909345
 }
+function checkDeviceSize()
+	if _G.PC then
+		return UDim2.new(0, 800,0, 640)
+	else
+		return UDim2.new(0, 480,0, 350)
+	end
+end
 Window = Library:CreateWindow({
+	Transparency = 0.3,
 	Logo = 128185233852701,
 	Keycode = Enum.KeyCode.LeftControl,
-	Size = UDim2.new(0, 0),
-	MainColor = Color3.new(0, 0, 0),
-	DropColor = Color3.new(0, 0, 0)
+	Size = checkDeviceSize(),
+	MainColor = Color3.fromRGB(51, 175, 255),
+	DropColor = Color3.fromRGB(0, 75, 255)
 })
 Notify = function(t, en, th, endesc, thdesc)
 	Window:Notify({
@@ -3216,7 +3333,7 @@ TabOptions = {
 }
 --About
 TabOptions.About:CreateSection({Title = tranlate("Overview", "ภาพรวม")})
-TabOptions.About:Paragarp({
+TabOptions.About:CreateLabel({
 	Title = tranlate("What Games Does Fetching's Script <font color='rgb(0, 195, 255)'>Support</font> ?", "สคริปต์ของเรา<font color='rgb(0, 195, 255)'>สนับสนุน</font>เกมอะไรบ้าง ?"),
 	Desc = "- Fisch\n- Dead Rails\n- Build a Boat"
 })
@@ -3294,6 +3411,20 @@ TabOptions.Settings:CreateToggle({
 				if Drop then
 					Drop.Visible =  false
 				end
+			end
+		end)
+	end,
+})
+TabOptions.Settings:CreateToggle({
+	Title = tranlate("Transparensy", "พื้นหลังโปร่งใส"),
+	Desc = tranlate("Enable or Disable Shadow.", "การเปิดปิดเงาหลังหน้าต่างผู้ใช้"),
+	Value = true,
+	Callback = function(v)
+		pcall(function()
+			if v then
+				Service.CoreGui.Fetching.Background.BackgroundTransparency = 0.25
+			else
+				Service.CoreGui.Fetching.Background.BackgroundTransparency = 0
 			end
 		end)
 	end,
@@ -3618,23 +3749,23 @@ TabOptions.Aim:CreateSelect({
 		SaveSettings()
 	end,
 })
-	local Cross = Instance.new("ScreenGui")
-	local CrossFrame = Instance.new("Frame", Cross)
-	local IconCross = Instance.new("ImageLabel", CrossFrame)
-	Cross.IgnoreGuiInset = true
-	Cross.Name = "Cross.Fetching"
-	Cross.DisplayOrder = -1
-	
-	CrossFrame.BackgroundTransparency = 1
-	CrossFrame.Size = UDim2.new(1, 0, 1, 0)
-	CrossFrame.Position = UDim2.new(0, 0, 0, 0)
+local Cross = Instance.new("ScreenGui")
+local CrossFrame = Instance.new("Frame", Cross)
+local IconCross = Instance.new("ImageLabel", CrossFrame)
+Cross.IgnoreGuiInset = true
+Cross.Name = "Cross.Fetching"
+Cross.DisplayOrder = -1
 
-	IconCross.BackgroundTransparency = 1
-	IconCross.Position = UDim2.new(0, 700, 0, 400)
-	IconCross.Size = UDim2.new(0, 40, 0, 40)
-	IconCross.Image = "rbxassetid://93479273062537"
-	IconCross.Visible = false
-	Cross.Parent = Service.CoreGui
+CrossFrame.BackgroundTransparency = 1
+CrossFrame.Size = UDim2.new(1, 0, 1, 0)
+CrossFrame.Position = UDim2.new(0, 0, 0, 0)
+
+IconCross.BackgroundTransparency = 1
+IconCross.Position = UDim2.new(0, 700, 0, 400)
+IconCross.Size = UDim2.new(0, 40, 0, 40)
+IconCross.Image = "rbxassetid://93479273062537"
+IconCross.Visible = false
+Cross.Parent = Service.CoreGui
 TabOptions.Aim:CreateSection({Title = tranlate("Camera", "กล้อง")})
 TabOptions.Aim:CreateToggle({
 	Title = tranlate("Automatic Click Screen", "คลิกหน้าจออัตโนมัติ"),
@@ -3871,7 +4002,7 @@ TabOptions.Server:CreateButton({
 		end
 	end})
 TabOptions.Server:CreateButton({
-	Title = tranlate("Clipboard JobId", "ก็อบไอดีเซิร์ฟเวอร์"),
+	Title = tranlate("Clipboard JobId", "คัดลอกไอดีเซิร์ฟเวอร์"),
 	Callback = function()
 		copy(_jobid)
 	end})
@@ -3951,20 +4082,40 @@ function censorName(name)
 	end
 end
 
-TabOptions.Performant:Paragarp({
+TabOptions.Performant:CreateLabel({
 	Title = tranlate('<font color="rgb(0, 170, 255)">Name </font>','<font color="rgb(0, 170, 255)">ชื่อ </font>') .. ": " .. LocalPlayer.DisplayName,
 	Desc =  tranlate("Username : ", "ผู้ใช้ : ") .. censorName(tostring(LocalPlayer.Name)) .. "\n" .. tranlate("Account Age : ", "ไอดีสร้างมาแล้ว : ") .. tostring(LocalPlayer.AccountAge) .. tranlate(" days", " วัน")
 })
-TabOptions.Performant:Paragarp({
+TabOptions.Performant:CreateLabel({
+	Title = tranlate('<font color="rgb(0, 170, 255)">Game </font>','<font color="rgb(0, 170, 255)">แมพ </font>') .. ": " .. tostring(game:GetService("MarketplaceService"):GetProductInfo(_id).Name),
+	Desc = tranlate("Place Id : " .. _id ..  "\nJon Id : " .. tostring(_jobid), "เกมไอดี : " .. _id ..  "\nเซิร์ฟเวอร์ไอดี : " .. tostring(_jobid)),
+	Icon = 4483391773
+})
+ServerTime = TabOptions.Performant:CreateLabel({
+	Title = tranlate('<font color="rgb(0, 170, 255)">Server Time </font>','<font color="rgb(0, 170, 255)">เซิร์ฟเวอร์</font>'),
+	Desc = "N/A"
+})
+rendersteped:Connect(function()
+	pcall(function()
+		local gameTime = math.floor(workspace.DistributedGameTime + 0.5)
+		local hour = math.floor(gameTime / (60^2)) % 24
+		local minute = math.floor(gameTime / (60^1)) % 60
+		local second = math.floor(gameTime / (60^0)) % 60
+		local fps = workspace:GetRealPhysicsFPS()
+		local Ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+		ServerTime:SetDesc(tranlate("Hours : ".. hour .. "\nMinutes : " .. minute .. "\nSeconds : " .. second .. "\nFPS : " .. fps .. "\nPing : "..Ping, "ชั่วโมง : ".. hour .. "\nนาที : " .. minute .. "\nวินาที : " .. second .. "\nเฟรมเรทต่อวินาที : " .. fps .. "\nปิง : "..Ping))
+	end)
+end)
+TabOptions.Performant:CreateLabel({
 	Title = tranlate('<font color="rgb(0, 170, 255)">Executor </font>','<font color="rgb(0, 170, 255)">ตัวรัน </font>') .. ": " .. tostring(_executor),
 	Desc = 'Level ' .. ": " .. getlevelexec()
 })
 if _G.PC then
-	TabOptions.Performant:Paragarp({
+	TabOptions.Performant:CreateLabel({
 		Title = tranlate('<font color="rgb(0, 170, 255)">Device </font>','<font color="rgb(0, 170, 255)">อุปกรณ์ </font>') .. ": " .. tranlate("Computer [ PC ] ", "คอมพิวเตอร์"),
 	})
 else
-	TabOptions.Performant:Paragarp({
+	TabOptions.Performant:CreateLabel({
 		Title = tranlate('<font color="rgb(0, 170, 255)">Device </font>','<font color="rgb(0, 170, 255)">อุปกรณ์ </font>') .. ": " .. tranlate("Mobile", "โทรศัพท์"),
 	})
 end
@@ -4049,7 +4200,19 @@ TabOptions.Executor:CreateButton({
 		end
 	end
 })
-	spawn(function()
+
+
+
+
+
+if BuildABoat then
+
+end
+
+
+
+
+spawn(function()
 	while task.wait() do
 		pcall(function()
 			if _G.Lock or _G.Tween then
@@ -4088,8 +4251,8 @@ LocalPlayer.OnTeleport:Connect(function(State)
 	end
 end);
 
-if _executor == "Xeno" then
-	Notify(15, "Xeno Dectectoon", "ตรวจพบตัวรัน Xeno", "Warning Low UNC may not Support Some Function.", "ระวัง ตัวรันของคุณ UNC ต่ำมากบางฟังชั่นอาจจะไม่ทำงาน")
+if _executor == "Xeno" or _executor == "Solara" or _executor == "Vega X" then
+	Notify(15, "Low UNC Dectection", "ตรวจพบตัวรัน UNC ต่ำ", "Warning Low UNC may not Support Some Function.", "ระวัง ตัวรันของคุณ UNC ต่ำเกิดไปบางฟังชั่นอาจไม่ทำงาน")
 end
 
 --[[task.spawn(function()
