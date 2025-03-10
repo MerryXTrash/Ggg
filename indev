@@ -47,6 +47,7 @@ _G.Game = {
 	Fisch = {
 		AutomaticFishing = false,
 		AllEvents = false,
+		ModeFishing = "Normal",
 		SelectZoneEvents = {"Megalodon Default", "Whales Pool"},
 		WalkOnWater = true,
 		SellAll = false,
@@ -4611,6 +4612,16 @@ elseif Fisch then
 			Game_SaveSettings()
 		end,
 	})
+	TabFisch.Ganeral:CreateSelect({
+		Title = tranlate("Select Events", "เลือกอีเว้นท์"),
+		List = {"Normal","Instant"},
+		Value = _G.Game.Fisch.ModeFishing,
+		Multi = true,
+		Callback = function(v)
+			_G.Game.Fisch.ModeFishing = v
+			Game_SaveSettings()
+		end,
+	})
 	TabFisch.Ganeral:CreateToggle({
 		Title = tranlate("Enable Track Events", "เปิดใช้งานการแทรกอีเว้นท์"),
 		Value =  _G.Game.Fisch.AllEvents,
@@ -4629,6 +4640,7 @@ elseif Fisch then
 			Game_SaveSettings()
 		end,
 	})
+	
 	TabFisch.Ganeral:CreateSection({Title = tranlate("Selling", "การขายปลา")})
 	TabFisch.Ganeral:CreateToggle({
 		Title = tranlate("Automatic Selling", "ขายปลาทั้งหมดอัตโนมัติ"),
@@ -5186,32 +5198,35 @@ elseif Fisch then
 				if track.Animation.AnimationId == "rbxassetid://134146970600575" then 
 					pcall(function()
 						if _G.Game.Fisch.ModeFishing == "Instant" then
-							game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("reel"):Destroy()
 							game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
 							Character:FindFirstChild(RodName).events.reset:FireServer()
+							game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("reel"):Destroy()
+							game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
 							Character:FindFirstChild(RodName).Parent = Backpack
 							Character:FindFirstChild(RodName).Parent = Backpack
 							LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
 							LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
 							Character:FindFirstChild(RodName).Parent = Backpack
 							Character:FindFirstChild(RodName).Parent = Backpack
+						else
+							game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
 						end
 					end)
 				end
 			end
-			for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
-				if track.Animation.AnimationId == "rbxassetid://113972107465696" or
-					track.Animation.AnimationId == "rbxassetid://76859144349008" then
-					track:AdjustSpeed(9e9)
-					track:Destroy()
-				end
-			end
-			for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
-				if track.Animation.AnimationId == "rbxassetid://121544683887361" then
-					track:Play(0.01, 0.01, 0.01)
-				end
-			end
 		end
+	end)
+	loop(0,function()
+		pcall(function()
+			if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
+				RodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
+				if _G.Game.Fisch.ModeFishing == "Normal" then
+					if PlayerGui.reel then
+						game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
+					end
+				end
+			end
+		end)
 	end)
 	task.spawn(function()
 		pcall(function()
@@ -5224,6 +5239,7 @@ elseif Fisch then
 		while task.wait() do
 			if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
 				RodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
+				local humanoid = Character:FindFirstChildOfClass("Humanoid")
 				if Backpack:FindFirstChild(RodName) then
 					LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
 				end
@@ -5235,6 +5251,18 @@ elseif Fisch then
 					end)
 				else
 					LocalPlayer.Character:FindFirstChild(RodName).events.cast:FireServer(_G.Game.Fisch.Cast, 1)
+				end
+				for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+					if track.Animation.AnimationId == "rbxassetid://113972107465696" or
+						track.Animation.AnimationId == "rbxassetid://76859144349008" then
+						track:AdjustSpeed(9e9)
+						track:Destroy()
+					end
+				end
+				for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+					if track.Animation.AnimationId == "rbxassetid://121544683887361" then
+						track:Play(0.01, 0.01, 0.01)
+					end
 				end
 				if _G.Game.Fisch.AllEvents then
 					if not _G.WhaleShark or not _G.F_GreatWhiteShark or not _G.F_GreathammerShark or not _G.F_Kraken or not _G.F_Orca or not _G.F_Bluewhale or not _G.F_Megalodon or not _G.F_Hydra then
@@ -5486,25 +5514,16 @@ task.spawn(function()
 	while task.wait() do
 		pcall(function()
 			if _G.Lock or _G.Tween or _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
-				if syn then
-					setfflag("HumanoidParallelRemoveNoPhysics", "False")
-					setfflag("HumanoidParallelRemoveNoPhysicsNoSimulate2", "False")
-					Character:FindFirstChild("Humanoid").Sit:ChangeState(11)
-					if Character.Humanoid.Sit == true then
-						Character.Humanoid.Sit = false
-					end
-				else
-					if Character:FindFirstChild("HumanoidRootPart") then
-						if not Character.HumanoidRootPart:FindFirstChild("BodyVelocity1") then
-							if Character.Humanoid.Sit == true then
-								Character.Humanoid.Sit = false
-							end
-							local bodyVelocity = Instance.new("BodyVelocity")
-							bodyVelocity.Name = "BodyVelocity1"
-							bodyVelocity.Parent = Character.HumanoidRootPart
-							bodyVelocity.velocity = Vector3.new(0, 0, 0)
-							bodyVelocity.maxForce = Vector3.new(100000, 100000, 100000)
+				if Character:FindFirstChild("HumanoidRootPart") then
+					if not Character.HumanoidRootPart:FindFirstChild("BodyVelocity1") then
+						if Character.Humanoid.Sit == true then
+							Character.Humanoid.Sit = false
 						end
+						local bodyVelocity = Instance.new("BodyVelocity")
+						bodyVelocity.Name = "BodyVelocity1"
+						bodyVelocity.Parent = Character.HumanoidRootPart
+						bodyVelocity.velocity = Vector3.new(0, 0, 0)
+						bodyVelocity.maxForce = Vector3.new(100000, 100000, 100000)
 					end
 				end
 			else
