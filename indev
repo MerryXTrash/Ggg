@@ -1,4 +1,3 @@
-_G.Thailand = true
 if not game:IsLoaded() then game.Loaded:Wait() end;
 Service = {
 	CoreGui = game:GetService("CoreGui"),
@@ -41,11 +40,21 @@ _G.Config = {
 	JobId = ";-;",
 	FPS = 120,
 	CodeBlack = 'print("Hello, world")',
-	Click = false
+	Click = false,
+	WhieScreen = false
 };
 _G.Game = {
 	Fisch = {
-
+		AutomaticFishing = false,
+		ModeFishing = "Instant",
+		AllEvents = false,
+		SelectZoneEvents = {"Megalodon Default", "Whales Pool"},
+		WalkOnWater = true,
+		SellAll = false,
+		Radar = true,
+		inf_Oxygen = true,
+		NotifyClose = false,
+		Cast = 1,
 	};
 	DeadRails = {
 
@@ -261,7 +270,7 @@ sendwebhook = function(url, data)
 	return success
 end;
 tranlate=function(en, th)
-	if _G.Thailand then
+	if _G.Thailand or getgenv().Thai or _G.Thai then
 		return tostring(th)
 	else
 		return tostring(en)
@@ -399,6 +408,12 @@ GetY = function(part)
 	local head = part.Position + Vector3.new(0, part.Size.Y / 2, 0)
 	return head
 end;
+LookFront = function(part)
+	local rootPosition = Character.HumanoidRootPart.Position
+	local partPosition = part.Position
+	local lookAtCFrame = CFrame.lookAt(rootPosition, partPosition)
+	Character.HumanoidRootPart.CFrame = CFrame.new(rootPosition, partPosition)
+end
 tp = function(new)
 	pcall(function()
 		if Character:FindFirstChild("HumanoidRootPart") then
@@ -859,31 +874,144 @@ function Library:CreateWindow(info)
 	local TabFrame_1 = Instance.new("Frame")
 	local Shadow = Instance.new("ImageLabel")
 	local resize = Instance.new("Frame")
+	local effect = Instance.new("ImageLabel")
+	local effectcircle = Instance.new("ImageLabel")
+	local effectcircle2 = Instance.new("ImageLabel")
+	local effectcircle3 = Instance.new("ImageLabel")
+	local effectcircle4 = Instance.new("ImageLabel")
+	local effectcircle5 = Instance.new("ImageLabel")
+
+	local UIcornEffect = Instance.new("UICorner")
+	local frameef = Instance.new("Frame")
 
 	Background_1.Name = "Background"
 	Background_1.Parent = ScreenGui
 	Background_1.AnchorPoint = Vector2.new(0.5, 0.5)
+	Background_1.BackgroundTransparency = Transparency
 	Background_1.BackgroundColor3 = Color3.fromRGB(31, 34, 40)
 	Background_1.BorderColor3 = Color3.fromRGB(0,0,0)
 	Background_1.BorderSizePixel = 0
 	Background_1.Position = UDim2.new(0.5, 0,0.5, 0)
 	Background_1.Size = Size
 	local BlurFrame2 = BlurFrameL:BlurFrame(Background_1)
-
 	UICorner_1.Parent = Background_1
 
 	UIStroke_1.Parent = Background_1
 	UIStroke_1.Color = Color3.fromRGB(47,48,51)
 	UIStroke_1.Transparency = 0.3
 	UIStroke_1.Thickness = 3
-
+	
 	resize.Parent = Background_1
-	resize.Size = UDim2.new(0, 50, 0, 50)
+	resize.Size = UDim2.new(0, 65, 0, 65)
 	resize.Position = UDim2.new(1, -20, 1, -20)
 	resize.BackgroundTransparency = 1
 	resize.BorderSizePixel = 0
 
 	Resize(resize, Background_1)
+
+	frameef.Parent = Background_1
+	frameef.BackgroundTransparency = 1
+	frameef.BackgroundColor3 = Color3.fromRGB(31, 34, 40)
+	frameef.BorderColor3 = Color3.fromRGB(0,0,0)
+	frameef.BorderSizePixel = 0
+	frameef.Size = UDim2.new(1,0,1,0)
+	frameef.ClipsDescendants = true
+	effect.Parent = Background_1
+	effect.Size = UDim2.new(1,0,1,0)
+	effect.Image = "rbxassetid://133167155418861"
+	effect.ImageTransparency = 0.85
+	effect.BackgroundTransparency = 1
+	effect.Position = UDim2.new(0,0,0,0)
+	UIcornEffect.Parent = effect
+
+	effectcircle.Parent = frameef
+	effectcircle.Size = UDim2.new(0,400,0,400)
+	effectcircle.Image = "rbxassetid://132180927784800"
+	effectcircle.ImageTransparency = 0.8
+	effectcircle.BackgroundTransparency = 1
+	effectcircle.Position = UDim2.new(0.5, 0, 0.5, 0)
+
+	effectcircle2.Parent = frameef
+	effectcircle2.Size = UDim2.new(0,400,0,400)
+	effectcircle2.Image = "rbxassetid://135880574040377"
+	effectcircle2.ImageTransparency = 0.8
+	effectcircle2.BackgroundTransparency = 1
+
+	effectcircle3.Parent = frameef
+	effectcircle3.Size = UDim2.new(0,600,0,600)
+	effectcircle3.Image = "rbxassetid://78169354814171"
+	effectcircle3.ImageTransparency = 0.8
+	effectcircle3.BackgroundTransparency = 1
+	effectcircle3.Position = UDim2.new(0.5, 0, 0.1, 0)
+
+	effectcircle4.Parent = frameef
+	effectcircle4.Size = UDim2.new(0,600,0,600)
+	effectcircle4.Image = "rbxassetid://119323583847129"
+	effectcircle4.ImageTransparency = 0.8
+	effectcircle4.BackgroundTransparency = 1
+	effectcircle4.Position = UDim2.new(0.9,0,0.5,0)
+
+	effectcircle5.Parent = frameef
+	effectcircle5.Size = UDim2.new(0,600,0,600)
+	effectcircle5.Image = "rbxassetid://133790688650660"
+	effectcircle5.ImageTransparency = 0.8
+	effectcircle5.BackgroundTransparency = 1
+	effectcircle5.Position = UDim2.new(0.9,0,0.5,0)
+
+
+	local function checkBoundaries(object)
+		local backgroundSize = frameef.AbsoluteSize
+		local objectSize = object.AbsoluteSize
+		local position = object.Position
+		if position.X.Scale < 0 then
+			position = UDim2.new(0, 0, position.Y.Scale, position.Y.Offset)
+		elseif position.X.Scale > 1 then
+			position = UDim2.new(1, -objectSize.X, position.Y.Scale, position.Y.Offset)
+		end
+		if position.Y.Scale < 0 then
+			position = UDim2.new(position.X.Scale, position.X.Offset, 0, 0)
+		elseif position.Y.Scale > 1 then
+			position = UDim2.new(position.X.Scale, position.X.Offset, 1, -objectSize.Y)
+		end
+
+		return position
+	end
+	local function randomTween(object)
+		while true do
+			local randomX = math.random() * 2 - 1
+			local randomY = math.random() * 2 - 1
+			local randomPosition = UDim2.new(
+				math.clamp(randomX, 0, 1), 0,
+				math.clamp(randomY, 0, 1), 0
+			)
+			local tweenInfo = TweenInfo.new(
+				math.random(5, 10),
+				Enum.EasingStyle.Linear,
+				Enum.EasingDirection.InOut,
+				0,
+				false
+			)
+			local tween = Service.TweenService:Create(object, tweenInfo, {Position = randomPosition})
+			tween:Play()
+			tween.Completed:Wait()
+			object.Position = checkBoundaries(object)
+		end
+	end
+	coroutine.wrap(function()
+		randomTween(effectcircle)
+	end)()
+	coroutine.wrap(function()
+		randomTween(effectcircle3)
+	end)()
+	coroutine.wrap(function()
+		randomTween(effectcircle2)
+	end)()
+	coroutine.wrap(function()
+		randomTween(effectcircle4)
+	end)()
+	coroutine.wrap(function()
+		randomTween(effectcircle5)
+	end)()
 
 	Shadow.Parent = Background_1
 	Shadow.Name = "DropShadow"
@@ -1595,6 +1723,10 @@ function Library:CreateWindow(info)
 					end
 				end
 
+				function New:Visible(a)
+					Toggle.Visible = a
+				end
+
 				function New:SetValue(a)
 					if type(a) == "boolean" and Value ~= a then
 						Value = a
@@ -1892,30 +2024,65 @@ function Library:CreateWindow(info)
 				ImageLabel_1D.Image = "rbxassetid://13858857904"
 				ImageLabel_1D.ImageTransparency = 0.5
 				ImageLabel_1D.Rotation = 90
-
+				
+				local MainDD = Instance.new("Frame")
 				local DropdownSelect = Instance.new("Frame")
 				local UICorner_1 = Instance.new("UICorner")
 				local UIStroke_1 = Instance.new("UIStroke")
 				local UIListLayout_1 = Instance.new("UIListLayout")
 				local Search_1 = Instance.new("Frame")
 				local UICorner_2 = Instance.new("UICorner")
-				local UIStroke_2 = Instance.new("UIStroke")
 				local TextBox_1 = Instance.new("TextBox")
 				local UIPadding_1 = Instance.new("UIPadding")
 				local ImageLabel_1 = Instance.new("ImageLabel")
 				local UIPadding_2 = Instance.new("UIPadding")
 				local ScrollingFrame_1 = Instance.new("ScrollingFrame")
 				local UIListLayout_2 = Instance.new("UIListLayout")
-
+				
+				MainDD.Name = "Frame2"
+				MainDD.Parent = Background_1
+				MainDD.AnchorPoint = Vector2.new(0.5,0.5)
+				MainDD.BackgroundColor3 = Color3.fromRGB(31, 34, 40)
+				MainDD.BackgroundTransparency = 1
+				MainDD.BorderColor3 = Color3.fromRGB(0,0,0)
+				MainDD.BorderSizePixel = 0
+				MainDD.Position = UDim2.new(0.5, 0,0.5, 0)
+				MainDD.Size = UDim2.new(0, 300,0, 0)
+				MainDD.Visible = false
+				MainDD.ClipsDescendants = false
+				
+				local Shadow = Instance.new("ImageLabel")
+				Shadow.Parent = MainDD
+				Shadow.Name = "DropShadow"
+				Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+				Shadow.BackgroundColor3 = Color3.fromRGB(28,28,30)
+				Shadow.BackgroundTransparency = 1
+				Shadow.BorderColor3 = Color3.fromRGB(0,0,0)
+				Shadow.BorderSizePixel = 0
+				Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+				Shadow.Size = UDim2.new(0, 450, 0, 450)
+				Shadow.ZIndex = 0
+				Shadow.Image = "rbxassetid://8992230677"
+				Shadow.ImageColor3 = Color3.new(0, 0, 0)
+				Shadow.ImageTransparency = 0.6
+				Shadow.ResampleMode = Enum.ResamplerMode.Default
+				Shadow.ScaleType = Enum.ScaleType.Slice
+				Shadow.SliceScale = 1
+				Shadow.TileSize = UDim2.new(1, 0, 1, 0)
+				Shadow.SliceCenter = Rect.new(99, 99, 99, 99)
+				Shadow.ZIndex = 1
+				
 				DropdownSelect.Name = "DropdownSelect"
-				DropdownSelect.Parent = ScreenGui
+				DropdownSelect.Parent = MainDD
+				DropdownSelect.AnchorPoint = Vector2.new(0.5,0.5)
 				DropdownSelect.BackgroundColor3 = Color3.fromRGB(31, 34, 40)
 				DropdownSelect.BackgroundTransparency = 0
 				DropdownSelect.BorderColor3 = Color3.fromRGB(0,0,0)
 				DropdownSelect.BorderSizePixel = 0
-				DropdownSelect.Position = UDim2.new(0, 0,0, 0)
-				DropdownSelect.Size = UDim2.new(0, 120,0, 0)
+				DropdownSelect.Position = UDim2.new(0.5, 0,0.5, 0)
+				DropdownSelect.Size = UDim2.new(1, 0,1, 0)
 				DropdownSelect.ClipsDescendants = true
+				
 
 				UICorner_1.Parent = DropdownSelect
 
@@ -1931,18 +2098,15 @@ function Library:CreateWindow(info)
 
 				Search_1.Name = "Search"
 				Search_1.Parent = DropdownSelect
-				Search_1.BackgroundColor3 = Color3.fromRGB(31, 34, 40)
+				Search_1.BackgroundColor3 = Color3.fromRGB(24, 26, 31)
 				Search_1.BorderColor3 = Color3.fromRGB(0,0,0)
 				Search_1.BorderSizePixel = 0
 				Search_1.LayoutOrder = -1
-				Search_1.Size = UDim2.new(1, 0,0, 18)
+				Search_1.Size = UDim2.new(1, 0,0, 20)
 
 				UICorner_2.Parent = Search_1
 				UICorner_2.CornerRadius = UDim.new(1,0)
 
-				UIStroke_2.Parent = Search_1
-				UIStroke_2.Color = Color3.fromRGB(54, 58, 69)
-				UIStroke_2.Thickness = 2.5
 
 				TextBox_1.Parent = Search_1
 				TextBox_1.Active = true
@@ -1986,7 +2150,7 @@ function Library:CreateWindow(info)
 				ScrollingFrame_1.BackgroundTransparency = 1
 				ScrollingFrame_1.BorderColor3 = Color3.fromRGB(0,0,0)
 				ScrollingFrame_1.BorderSizePixel = 0
-				ScrollingFrame_1.Size = UDim2.new(1, 0,0, 62)
+				ScrollingFrame_1.Size = UDim2.new(1, 0,0, 262)
 				ScrollingFrame_1.ClipsDescendants = true
 				ScrollingFrame_1.AutomaticCanvasSize = Enum.AutomaticSize.None
 				ScrollingFrame_1.BottomImage = "rbxasset://textures/ui/Scroll/scroll-bottom.png"
@@ -2027,15 +2191,15 @@ function Library:CreateWindow(info)
 				local isopen = false
 
 				local function open()
-					local targetX = ValueBox_1.AbsolutePosition.X - DropdownSelect.Parent.AbsolutePosition.X + ValueBox_1.Size.X.Offset - 119
-					local targetY = ValueBox_1.AbsolutePosition.Y - DropdownSelect.Parent.AbsolutePosition.Y + ValueBox_1.Size.Y.Offset + 7
-					tw({v = DropdownSelect, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Size = UDim2.new(0, 120, 0, 100), Position = UDim2.new(0, targetX, 0, targetY)}}):Play()
+					MainDD.Visible = true
+					tw({v = DropdownSelect, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Size = UDim2.new(0, 300, 0, 300), Position = UDim2.new(0.5, 0, 0.5, 0)}}):Play()
 					tw({v = UIStroke_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Transparency = 0}}):Play()
 					tw({v = ImageLabel_1D, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Rotation = 0}}):Play()
 				end
 
 				local function close()
-					tw({v = DropdownSelect, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Size = UDim2.new(0, 120, 0, 0)}}):Play()
+					MainDD.Visible = false
+					tw({v = DropdownSelect, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Size = UDim2.new(0, 300, 0, 0)}}):Play()
 					tw({v = ImageLabel_1D, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Rotation = 90}}):Play()
 					tw({v = UIStroke_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Transparency = 1}}):Play()
 					isopen = false
@@ -2137,6 +2301,7 @@ function Library:CreateWindow(info)
 					UIPadding_3.PaddingRight = UDim.new(0,5)
 
 					local ClickItem = click(Item_1)
+					ClickItem.ZIndex = 3
 					local function unselect()
 						tw({v = TextLabel_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {TextTransparency = 0.5}}):Play()
 						tw({v = Item_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {BackgroundTransparency = 1}}):Play()
@@ -2304,7 +2469,9 @@ function Library:CreateWindow(info)
 						Button.Frame.Desc.Visible = false
 					end
 				end
-
+				function New:Visible(a)
+					Button.Visible = a
+				end
 				return New
 			end
 
@@ -2332,6 +2499,10 @@ function Library:CreateWindow(info)
 					Label.Frame.Title.Text = a
 				end
 
+				function New:SetImage(a)
+					Image.Image = gl(a)
+				end
+
 				function New:SetDesc(a)
 					if a and a ~= '' then
 						Label.Frame.Desc.Text = a
@@ -2339,6 +2510,10 @@ function Library:CreateWindow(info)
 					else
 						Label.Frame.Desc.Visible = false
 					end
+				end
+
+				function New:Visible(a)
+					Label.Visible = a
 				end
 
 				return New
@@ -3239,12 +3414,14 @@ function Library:CreateWindow(info)
 			if OpenUI then
 				OpenUI = false
 				Background_1.Visible = false
+				frameef.Visible = false
 				for i = 1,2 do
 					BlurFrame2[i]:Destroy()
 				end
 			else
 				OpenUI = true
 				Background_1.Visible = true
+				frameef.Visible = true
 				BlurFrame2 = BlurFrameL:BlurFrame(Background_1)
 			end
 			tw({v = Closeui, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {BackgroundColor3 = Color3.fromRGB(31, 34, 40)}}):Play()
@@ -3280,11 +3457,11 @@ function checkDeviceSize()
 	if _G.PC then
 		return UDim2.new(0, 800,0, 640)
 	else
-		return UDim2.new(0, 480,0, 350)
+		return UDim2.new(0, 540,0, 350)
 	end
 end
 Window = Library:CreateWindow({
-	Transparency = 0.3,
+	Transparency = 0.1,
 	Logo = 128185233852701,
 	Keycode = Enum.KeyCode.LeftControl,
 	Size = checkDeviceSize(),
@@ -3589,6 +3766,23 @@ TabOptions.Client:CreateToggle({
 
 --Position
 TabOptions.Position:CreateSection({Title = tranlate("Position", "ตำแหน่ง")})
+RealtimePosition = TabOptions.Position:CreateLabel({
+	Title = tranlate("Position : " .. "N/A", "ตำแหน่งของคุณ : " .. "N/A")
+})
+rendersteped:Connect(function()
+	pcall(function()
+		local pos = Character.HumanoidRootPart.Position
+		local englishText = string.format(
+			'Position : <font color="rgb(255, 0, 0)">X</font> %.2f  -  <font color="rgb(0, 255, 0)">Y</font> %.2f  -  <font color="rgb(255, 255, 0)">Z</font> %.2f',
+			pos.X, pos.Y, pos.Z
+		)
+		local thaiText = string.format(
+			'ตำแหน่งของคุณ : <font color="rgb(255, 0, 0)">X</font> %.2f  -  <font color="rgb(0, 255, 0)">Y</font> %.2f  -  <font color="rgb(255, 255, 0)">Z</font> %.2f',
+			pos.X, pos.Y, pos.Z
+		)
+		RealtimePosition:SetTitle(tranlate(englishText, thaiText))
+	end)
+end)
 PositionList = TabOptions.Position:CreateDropdown({
 	Title = tranlate("Select Position", "เลือกตำแหน่ง"),
 	List = _G.Config.Save,
@@ -3603,6 +3797,17 @@ TabOptions.Position:CreateButton({
 	Callback = function()
 		local selectedPosition = _G.Config.Positions[_G.Config.SelectPosition]
 		tp(CFrame.new(selectedPosition.X, selectedPosition.Y, selectedPosition.Z))
+	end})
+TabOptions.Position:CreateButton({
+	Title = tranlate("Clipboard Position", "คัดลอกตำแหน่ง"),
+	Callback = function()
+		pcall(function()
+			local root = Character:FindFirstChild("HumanoidRootPart")
+			if root then
+				local positionString = string.format("%d, %d, %d", math.round(root.Position.X), math.round(root.Position.Y), math.round(root.Position.Z))
+				copy(positionString)
+			end
+		end)
 	end})
 TabOptions.Position:CreateSection({Title = tranlate("Create Position", "สร้างตำแหน่ง")})
 TabOptions.Position:CreateTextBox({
@@ -3646,6 +3851,9 @@ for _, v in pairs(Service.Players:GetChildren()) do
 	end
 end
 TabOptions.Players:CreateSection({Title = tranlate("Players", "ผู้เล่นคนอื่น")})
+AllPlayers = TabOptions.Players:CreateLabel({
+	Title = tranlate("Players : " .. "<font color='rgb(0, 255, 127)'>" .. _allplayers .. "</font> ","ผู้เล่นทั้งหมด : " .. "<font color='rgb(0, 255, 127)'>" .. _allplayers .. "</font> ")
+})
 PlayersList = TabOptions.Players:CreateDropdown({
 	Title = tranlate("Select Player", "เลือกผู้เล่น"),
 	List = PlayerTable,
@@ -4131,7 +4339,7 @@ TabOptions.Performant:CreateLabel({
 TabOptions.Performant:CreateLabel({
 	Title = tranlate('<font color="rgb(0, 170, 255)">Game </font>','<font color="rgb(0, 170, 255)">แมพ </font>') .. ": " .. tostring(game:GetService("MarketplaceService"):GetProductInfo(_id).Name),
 	Desc = tranlate("Place Id : " .. _id ..  "\nJon Id : " .. tostring(_jobid), "เกมไอดี : " .. _id ..  "\nเซิร์ฟเวอร์ไอดี : " .. tostring(_jobid)),
-	Icon = 4483391773
+	Icon = game:GetService("MarketplaceService"):GetProductInfo(_id).IconImageAssetId
 })
 ServerTime = TabOptions.Performant:CreateLabel({
 	Title = tranlate('<font color="rgb(0, 170, 255)">Server Time </font>','<font color="rgb(0, 170, 255)">เซิร์ฟเวอร์</font>'),
@@ -4162,6 +4370,19 @@ else
 	})
 end
 TabOptions.Performant:CreateSection({Title = tranlate("Boost", "บูสต์")})
+TabOptions.Performant:CreateToggle({
+	Title = tranlate("White Screen", "เปิดใช้งานหน้าจอขาว"),
+	Value = _G.Config.WhieScreen,
+	Callback = function(v)
+		_G.Config.WhieScreen = v
+		SaveSettings()
+		if v then
+			game:GetService("RunService"):Set3dRenderingEnabled(false)
+		else
+			game:GetService("RunService"):Set3dRenderingEnabled(true)
+		end
+	end,
+})
 TabOptions.Performant:CreateSlider({
 	Title = tranlate("FPS CAP", "เฟรมเรทสูงสุด"),
 	Min = 10,
@@ -4173,6 +4394,7 @@ TabOptions.Performant:CreateSlider({
 		SaveSettings()
 	end,
 })
+
 rendersteped:Connect(function()
 	setfpscap(_G.Config.FPS)
 end)
@@ -4242,9 +4464,7 @@ TabOptions.Executor:CreateButton({
 		end
 	end
 })
-
-
-
+Game_LoadSettings()
 if BuildABoat then
 	function tpgame1(x, y, z, speed)
 		pcall(function()
@@ -4295,14 +4515,16 @@ if BuildABoat then
 		Title = tranlate('<font color="rgb(255, 255, 127)">Golds </font>','<font color="rgb(255, 255, 127)">ทองคำ </font>') .. ": " .. PlayerGui.GoldGui.Frame.Amount.Text,
 	})
 	rendersteped:Connect(function()
-		Gold:SetTitle(tranlate('<font color="rgb(255, 255, 127)">Gold </font>','<font color="rgb(255, 255, 127)">ทองคำ </font>') .. ": " .. PlayerGui.GoldGui.Frame.Amount.Text)
+		pcall(function()
+			Gold:SetTitle(tranlate('<font color="rgb(255, 255, 127)">Gold </font>','<font color="rgb(255, 255, 127)">ทองคำ </font>') .. ": " .. PlayerGui.GoldGui.Frame.Amount.Text)
+		end)
 	end)
 	TabBuidABoat.Automatic:CreateToggle({
 		Title = tranlate("Automatic Coins", "ฟาร์มเหรียญทองอัตโนมัติ"),
 		Value =  _G.Game.BuildABoat.autofarming,
 		Callback = function(v)
 			_G.Game.BuildABoat.autofarming = v
-			SaveSettings()
+			Game_SaveSettings()
 		end,
 	})
 	task.spawn(function()
@@ -4340,18 +4562,931 @@ if BuildABoat then
 		Rounding = 0,
 		Callback = function(v)
 			_G.Game.BuildABoat.aspeed = v
-			SaveSettings()
+			Game_SaveSettings()
 		end,
 	})
+elseif Fisch then
+	TabFisch = {
+		['Ganeral'] = General:CreateTab({
+			Title = tranlate("General", "ทั่วไป"),
+			Icon = 83854127275050
+		});
+		['Auto'] = General:CreateTab({
+			Title = tranlate("Automatic", "อัตโนมัติ"),
+			Icon = Icons.cube
+		});
+		['Rods'] = General:CreateTab({
+			Title = tranlate("Rods", "เบ็ด"),
+			Icon = 135502990773578
+		});
+		['Items'] = General:CreateTab({
+			Title = tranlate("Items", "ไอเท็ม"),
+			Icon = 73861113109573
+		});
+		['Location'] = General:CreateTab({
+			Title = tranlate("Teleport", "เทเลพอร์ต"),
+			Icon = Icons.location
+		});
+		['More'] = General:CreateTab({
+			Title = tranlate("More", "อื่นๆ"),
+			Icon = Icons.misc
+		});
+	}
+	TabFisch.Ganeral:CreateSection({Title = tranlate("Fishing", "การตกปลา")})
+	RodLabel = TabFisch.Ganeral:CreateLabel({
+		Title = tranlate('<font color="rgb(0, 170, 255)">Rod </font>' .. ": N/A", '<font color="rgb(0, 170, 255)">เบ็ด </font>' .. ": N/A"),
+		Desc = tranlate('<font color="rgb(255, 255, 127)">Enchant </font>' .. ": N/A", '<font color="rgb(255, 255, 127)">เอนชาร์จ </font>' .. ": N/A")
+	})
+	LureLabel = TabFisch.Ganeral:CreateLabel({
+		Title = tranlate('<font color="rgb(0, 170, 255)">Lure </font>' .. ": N/A", '<font color="rgb(0, 170, 255)">ล่อ </font>' .. ": N/A")
+	})
+	infoPlayer = TabFisch.Ganeral:CreateLabel({
+		Title = tranlate('<font color="rgb(0, 170, 255)">Level </font>' .. ": N/A", '<font color="rgb(0, 170, 255)">เลเวล </font>' .. ": N/A"),
+		Desc = "Coins : N/A"
+	})
+	TabFisch.Ganeral:CreateToggle({
+		Title = tranlate("Automatic Fishing", "ตกปลาอัตโนมัติ"),
+		Desc = tranlate("Faster than the time it takes for him/her to love you.", "เร็วกว่าเวลาที่เขาจะรักมึงอีก"),
+		Value =  _G.Game.Fisch.AutomaticFishing,
+		Callback = function(v)
+			_G.Game.Fisch.AutomaticFishing = v
+			Game_SaveSettings()
+		end,
+	})
+	TabFisch.Ganeral:CreateSelect({
+		Title = tranlate("Fishing Mode", "โหมดการตกปลา"),
+		Value = _G.Game.Fisch.ModeFishing,
+		List = {"Immediate","Instant", "Normal"},
+		Callback = function(v)
+			_G.Game.Fisch.ModeFishing = v
+			Game_SaveSettings()
+		end,
+	})
+	TabFisch.Ganeral:CreateToggle({
+		Title = tranlate("Enable Track Events", "เปิดใช้งานการแทรกอีเว้นท์"),
+		Value =  _G.Game.Fisch.AllEvents,
+		Callback = function(v)
+			_G.Game.Fisch.AllEvents = v
+			Game_SaveSettings()
+		end,
+	})
+	TabFisch.Ganeral:CreateDropdown({
+		Title = tranlate("Select Events", "เลือกอีเว้นท์"),
+		List = {"Scylla","Whales Pool", "Great White Shark", "Whale Shark", "Orcas Pool", "Megalodon Default", "The Kraken Pool", "Great Hammerhead Shark"},
+		Value = _G.Game.Fisch.SelectZoneEvents,
+		Multi = true,
+		Callback = function(v)
+			_G.Game.Fisch.SelectZoneEvents = v
+			Game_SaveSettings()
+		end,
+	})
+	TabFisch.Ganeral:CreateSection({Title = tranlate("Selling", "การขายปลา")})
+	TabFisch.Ganeral:CreateToggle({
+		Title = tranlate("Automatic Selling", "ขายปลาทั้งหมดอัตโนมัติ"),
+		Value =  _G.Game.Fisch.SellAll,
+		Callback = function(v)
+			_G.Game.Fisch.SellAll = v
+			Game_SaveSettings()
+		end,
+	})
+	loop(10, function()
+		if _G.Game.Fisch.SellAll then
+			Service.ReplicatedStorage.events.SellAll:InvokeServer()
+		end
+	end)
+	TabFisch.Ganeral:CreateSlider({
+		Title = tranlate("% Cast", "% ในการโยนเบ็ดไปข้างหน้า"),
+		Min = 1,
+		Max = 100,
+		Value = _G.Game.Fisch.Cast,
+		Rounding = 1,
+		Callback = function(v)
+			_G.Game.Fisch.Cast = v
+			Game_SaveSettings()
+		end,
+	})
+	TabFisch.Ganeral:CreateButton({
+		Title = tranlate("Sell All", "ขายปลาทั้งหมด"),
+		Callback = function()
+			Service.ReplicatedStorage.events.SellAll:InvokeServer()
+		end
+	})
+	TabFisch.Ganeral:CreateButton({
+		Title = tranlate("Sell Holding", "ขายปลาที่ถือยู่"),
+		Callback = function()
+			Service.ReplicatedStorage.events.Sell:InvokeServer()
+		end
+	})
+	TabFisch.Ganeral:CreateSection({Title = tranlate("Settings", "การตั้งค่า")})
+	TabFisch.Ganeral:CreateToggle({
+		Title = tranlate("Walk On Water", "เดินบนน้ำ"),
+		Value =  _G.Game.Fisch.WalkOnWater,
+		Callback = function(v)
+			_G.Game.Fisch.WalkOnWater = v
+			Game_SaveSettings()
+		end,
+	})
+	TabFisch.Ganeral:CreateToggle({
+		Title = tranlate("Fish Radar", "เรดาร์ค้นหาปลา"),
+		Value =  _G.Game.Fisch.Radar,
+		Callback = function(v)
+			_G.Game.Fisch.Radar = v
+			Game_SaveSettings()
+		end,
+	})
+	TabFisch.Ganeral:CreateToggle({
+		Title = tranlate("Infinite Oxygen", "หายใจใต้น้ำ"),
+		Value =  _G.Game.Fisch.inf_Oxygen,
+		Callback = function(v)
+			_G.Game.Fisch.inf_Oxygen = v
+			Game_SaveSettings()
+		end,
+	})
+	TabFisch.Ganeral:CreateToggle({
+		Title = tranlate("Disable Notify", "ปิดการแจ้งเตือน"),
+		Value =  _G.Game.Fisch.NotifyClose,
+		Callback = function(v)
+			_G.Game.Fisch.NotifyClose = v
+			if v then
+				PlayerGui.hud.safezone.announcements.Visible = false
+			else
+				PlayerGui.hud.safezone.announcements.Visible = true
+			end
+			Game_SaveSettings()
+		end,
+	})
+	loop(1, function()
+		pcall(function()
+			if _G.Game.Fisch.inf_Oxygen then
+				Character.Resources.oxygen.Disabled = true
+			else
+				Character.Resources.oxygen.Disabled = false
+			end
+		end)
+	end)
+	loop(1, function()
+		if _G.Game.Fisch.Radar then
+			for _, v1 in pairs(game:GetService("CollectionService"):GetTagged("radarTag")) do
+				if v1:IsA("BillboardGui") or v1:IsA("SurfaceGui") then
+					v1.Enabled = true
+				end
+			end
+		else
+			for _, v1 in pairs(game:GetService("CollectionService"):GetTagged("radarTag")) do
+				if v1:IsA("BillboardGui") or v1:IsA("SurfaceGui") then
+					v1.Enabled = false
+				end
+			end
+		end
+	end)
+	loop(1, function()
+		if _G.Game.Fisch.WalkOnWater then
+			for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+				if v:IsA("Part") then
+					v.CanCollide = true
+				end
+			end
+		else
+			for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+				if v:IsA("Part") then
+					v.CanCollide = false
+				end
+			end
+		end
+	end)
+	TabFisch.Auto:CreateSection({Title = tranlate("World", "โลก")})
+	infoWorld = TabFisch.Auto:CreateLabel({
+		Title = tranlate('<font color="rgb(0, 170, 255)">World </font>', '<font color="rgb(0, 170, 255)">โลก </font>'),
+		Desc = tranlate("Time : " .. PlayerGui.hud.safezone.worldstatuses["3_cycle"].label.Text  .. "\nSeason : " .. PlayerGui.hud.safezone.worldstatuses["4_season"].label.Text .. "\nWeather : " .. PlayerGui.hud.safezone.worldstatuses["2_weather"].label.Text, "เวลา : " .. PlayerGui.hud.safezone.worldstatuses["3_cycle"].label.Text  .. "\nฤดูกาล : " .. PlayerGui.hud.safezone.worldstatuses["4_season"].label.Text .. "\nสภาพอากาศ : " .. PlayerGui.hud.safezone.worldstatuses["2_weather"].label.Text)
+	})
+	rendersteped:Connect(function()
+		pcall(function()
+			AllPlayers:SetTitle(tranlate("Players : " .. "<font color='rgb(0, 255, 127)'>" .. _allplayers .. "</font> ","ผู้เล่นทั้งหมด : " .. "<font color='rgb(0, 255, 127)'>" .. _allplayers .. "</font> "))
+			Rod = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
+			local enchant = PlayerGui.hud.safezone.equipment.rods.scroll.safezone:FindFirstChild(Rod)
+			infoPlayer:SetTitle(tranlate('<font color="rgb(0, 170, 255)">Level </font>' .. ": " .. tostring(LocalPlayer.leaderstats.Level.Value), '<font color="rgb(0, 170, 255)">เลเวล </font>' .. ": " .. tostring(LocalPlayer.leaderstats.Level.Value)))
+			infoPlayer:SetDesc("Coins : " .. tostring(LocalPlayer.leaderstats["C$"].Value))
+			infoWorld:SetDesc(tranlate("Time : " .. PlayerGui.hud.safezone.worldstatuses["3_cycle"].label.Text  .. "\nSeason : " .. PlayerGui.hud.safezone.worldstatuses["4_season"].label.Text .. "\nWeather : " .. PlayerGui.hud.safezone.worldstatuses["2_weather"].label.Text, "เวลา : " .. PlayerGui.hud.safezone.worldstatuses["3_cycle"].label.Text  .. "\nฤดูกาล : " .. PlayerGui.hud.safezone.worldstatuses["4_season"].label.Text .. "\nสภาพอากาศ : " .. PlayerGui.hud.safezone.worldstatuses["2_weather"].label.Text))
+			if Rod then
+				RodLabel:SetTitle(tranlate('<font color="rgb(0, 170, 255)">Rod </font>' .. ": " .. tostring(Rod), '<font color="rgb(0, 170, 255)">เบ็ด </font>' .. ": " .. tostring(Rod)))
+			end
+			if enchant and enchant:FindFirstChild("equip") and enchant.equip.Text == "[Equipped]" then
+				local enchant2 = enchant:FindFirstChild("enchant")
+				if enchant2 then
+					RodLabel:SetDesc(tranlate("Enchant : " .. tostring(enchant2.Text), "เอนชาร์จ : " .. tostring(enchant2.Text)))
+				end
+			end
+			if Character and Character:FindFirstChild(Rod).values.lure then
+				LureLabel:SetTitle(tranlate('<font color="rgb(0, 170, 255)">Lure </font>' .. ": " .. tostring(Character:FindFirstChild(Rod).values.lure.Value) .. " %",'<font color="rgb(0, 170, 255)">ล่อ </font>' .. ": " .. tostring(Character:FindFirstChild(Rod).values.lure.Value) .. " %"))
+			else
+				LureLabel:SetTitle(tranlate('<font color="rgb(0, 170, 255)">Lure </font>' .. ": N/A", '<font color="rgb(0, 170, 255)">ล่อ </font>' .. ": N/A"))
+			end
+		end)
+	end)
+	World = {
+		Megalodon = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Megalodon</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">เมกาโลดอน</font>'),
+		});
+		BlueWhale = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Blue Whale</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">วาฬน้ำเงิน</font>'),
+		});
+		Orca = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Orca</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">วาฬเพชรฆาตร</font>'),
+		});
+		GreatWhiteShark = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Great White Shark</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">)ฉลามขาวขนาดใหญ่</font>'),
+		});
+		GreatHammerShark = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Great Hammer Shark</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">ฉลามหัวฆ้อนขนาดใหญ่</font>'),
+		});
+		WhaleShark = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Whale Shark</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">ฉลามวาฬ</font>'),
+		});
+		Kraken = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Kraken</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">ปลาหมึกยักษ์</font>'),
+		});
+		Meteor = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Meteor</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">อุกกาบาตร</font>'),
+		});
+		Merchant = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Mercant</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">พ่อค้านักเดินทาง</font>'),
+		});
+		Sunken = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Sunken Chest</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">กล่องซันเคน</font>')
+		});
+		Scylla = TabFisch.Auto:CreateLabel({
+			Title = tranlate('<font color="rgb(0, 255, 127)">Spawned !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">Scylla</font>',   '<font color="rgb(0, 255, 127)">เกิดแล้ว !</font>' .. " : " .. '<font color="rgb(255, 255, 255)">ไฮดร้า</font>')
+		})
+	}
+	WorldInfo = {
+		Megalodon = TabFisch.Auto:CreateToggle({
+			Title = tranlate("Automatic Fishing Megalodon", "ออโต้ตกเมกาโลดอน"),
+			Value =  _G.F_Megalodon,
+			Callback = function(v)
+				_G.F_Megalodon = v
+			end,
+		});
+		BlueWhale = TabFisch.Auto:CreateToggle({
+			Title = tranlate("Automatic Fishing Blue Whale", "ออโต้ตกวาฬน้ำเงิน"),
+			Value =  _G.F_Bluewhale,
+			Callback = function(v)
+				_G.F_Bluewhale = v
+			end,
+		});
+		Orca = TabFisch.Auto:CreateToggle({
+			Title = tranlate("Automatic Fishing Orca", "ออโต้ตกวาฬเพชรฆาตร"),
+			Value =  _G.F_Orca,
+			Callback = function(v)
+				_G.F_Orca = v
+			end,
+		});
+		GreatWhiteShark = TabFisch.Auto:CreateToggle({
+			Title = tranlate("Automatic Fishing Great White Shark", "ออโต้ตกฉลามขาวขนาดใหญ่"),
+			Value =  _G.F_GreatWhiteShark,
+			Callback = function(v)
+				_G.F_GreatWhiteShark = v
+			end,
+		});
+		GreathammerShark = TabFisch.Auto:CreateToggle({
+			Title = tranlate("Automatic Fishing Great Hammer Shark", "ออโต้ตกฉลามหัวฆ้อนขนาดใหญ่"),
+			Value =  _G.F_GreathammerShark,
+			Callback = function(v)
+				_G.F_GreathammerShark = v
+			end,
+		});
+		WhaleShake = TabFisch.Auto:CreateToggle({
+			Title = tranlate("Automatic Fishing Whale Shark", "ออโต้ตกฉลามวาฬ"),
+			Value =  _G.F_WhaleShark,
+			Callback = function(v)
+				_G.F_WhaleShark = v
+			end,
+		});
+		Kraken = TabFisch.Auto:CreateToggle({
+			Title = tranlate("Automatic Fishing Kraken", "ออโต้ตกปลาหมึกยักษ์"),
+			Value =  _G.F_Kraken,
+			Callback = function(v)
+				_G.F_Kraken = v
+			end,
+		});
+		Scylla = TabFisch.Auto:CreateToggle({
+			Title = tranlate("Automatic Fishing Scylla", "ออโต้ตกไฮดร้า"),
+			Value =  _G.F_Kraken,
+			Callback = function(v)
+				_G.F_Hydra = v
+			end,
+		});
+		Meteor = TabFisch.Auto:CreateButton({
+			Title = tranlate("Teleport to Meteor", "เทเลพอร์ตไปหาอุกกาบาตร"),
+			Callback = function()
+				pcall(function()
+					tp(workspace.MeteorItems:FindFirstChildOfClass("Model"):GetPivot())
+				end)
+			end
+		});
+		Mercant = TabFisch.Auto:CreateButton({
+			Title = tranlate("Teleport to Mercant", "เทเลพอร์ตไปหาพ่อคา้นักเดินทาง"),
+			Callback = function()
+				pcall(function()
+					tp(workspace:FindFirstChild("Travelling Merchant", true):GetPivot())
+				end)
+			end
+		});
+		Sunken = TabFisch.Auto:CreateButton({
+			Title = tranlate("Teleport to Sunken Chest", "เทเลพอร์ตไปหากล่องซันเคน"),
+			Callback = function()
+				pcall(function()
+					tp(workspace.ActiveChestsFolder:FindFirstChild("Pad", true):GetPivot())
+				end)
+			end
+		})
+	}
+	TabFisch.Items:CreateSection({Title = tranlate("Soon !", "กำลังมา !")})
+	TabFisch.Rods:CreateSection({Title = tranlate("Soon !", "กำลังมา !")})
+	TabFisch.More:CreateSection({Title = tranlate("Soon !", "กำลังมา !")})
+	TabFisch.Location:CreateSection({Title = tranlate("Island", "เกาะ")})
+	IslandSelect = "nil"
+	local IslandList = {}
+	for _, v in pairs(workspace.active["OceanPOI's"]:GetChildren()) do
+		table.insert(IslandList, v.Name)
+	end
+	IslandDropdown =TabFisch.Location:CreateDropdown({
+		Title = tranlate("Island", "เกาะทั้งหมด"),
+		List = IslandList,
+		Value = IslandSelect,
+		Multi = false,
+		Callback = function(value)
+			IslandSelect = value
+		end
+	})
+	TabFisch.Location:CreateButton({Title = tranlate("Teleport", "เทเลพอร์ต"),Mode = 1,Callback = function()
+		if IslandSelect == "nil" then
+			Notify("Error", "Please Select Zone")
+		else
+			tp(CFrame.new(GetY(workspace.active["OceanPOI's"]:FindFirstChild(IslandSelect, true))))
+		end
+	end})
+	TabFisch.Location:CreateButton({Title = tranlate("Refresh", "รีเฟรช"),Mode = 1,Callback = function()
+		IslandList = {}
+		IslandDropdown:Clear()
+		for _, v in pairs(workspace.active["OceanPOI's"]:GetChildren()) do  
+			table.insert(IslandList, v.Name)
+			IslandDropdown:Add(v.Name)
+		end
+	end})
+	TabFisch.Location:CreateSection({Title = tranlate("Zone", "โซน")})
+	local SelectZone = "nil"
+	local ALLZoneList = {}
+	local ZoneNames = {}
+	for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+		if v:IsA("Part") then
+			local zoneName = v.Name
+			if not ZoneNames[zoneName] then
+				table.insert(ALLZoneList, zoneName)
+				ZoneNames[zoneName] = true
+			end
+		end
+	end
+	AllZone = TabFisch.Location:CreateDropdown({
+		Title = tranlate("Zones", "โซนทั้งหมด"),
+		List = ALLZoneList,
+		Value = SelectZone,
+		Multi = false,
+		Callback = function(v)
+			SelectZone = v
+		end,
+	})
+	TabFisch.Location:CreateButton({
+		Title = tranlate("Teleport", "เทเลพอร์ต"),
+		Callback = function()
+			if SelectZone == "nil" then
+				print("Error")
+			else
+				tp(CFrame.new(GetY(workspace.zones.fishing:FindFirstChild(SelectZone))))
+			end
+		end
+	})
+	TabFisch.Location:CreateButton({
+		Title = tranlate("Refresh", "รีเฟรช"),
+		Callback = function()
+			ALLZoneList = {}
+			ZoneNames = {}
+			AllZone:Clear()
+			for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+				if v:IsA("Part") then
+					local zoneName22 = v.Name
+					if not ZoneNames[zoneName22] then
+						table.insert(ALLZoneList, v)
+						AllZone:Add(v.Name)
+						ZoneNames[zoneName22] = true
+					end
+				end
+			end
+		end
+	})
+	FishingZone = workspace.zones.fishing
+	loop(0.1, function()
+		for _, v in pairs(workspace.active:GetChildren()) do
+			if v:IsA("Model") and v.Name ~= "OceanPOI's" then
+				v:Destroy()
+			end
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
+			for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+				if v.Name == "Forsaken Veil - Scylla" then
+					if _G.F_Hydra then
+						tp(CFrame.new(-2172, -11218, 7060))
+						spin(Vector3.new(180, 81.55699920654297, 180))
+					else
+						continue
+					end
+				elseif v.Name == "Megalodon Default" then
+					if _G.F_Megalodon then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						continue
+					end
+				elseif v.Name == "Whales Pool" then
+					if _G.F_Bluewhale then
+						tp(CFrame.new(GetY(v)) * CFrame.new(0, 3, 0)) LookFront(v)
+					else
+						continue
+					end
+				elseif v.Name == "Orcas Pool" then
+					if _G.F_Orca then
+						tp(CFrame.new(GetY(v)) * CFrame.new(0,3,50))
+						if Character:FindFirstChild("HumanoidRootPart") then
+							Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
+						end
+					else
+						continue
+					end
+				elseif v.Name == "The Kraken Pool" then
+					if _G.F_Kraken then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						continue
+					end
+				elseif v.Name == "Great Hammerhead Shark" then
+					if _G.F_GreathammerShark then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						continue
+					end
+				elseif v.Name == "Great White Shark" then
+					if _G.F_GreatWhiteShark then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						continue
+					end
+				elseif v.Name == "Whale Shark" then
+					if _G.F_WhaleShark then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						continue
+					end
+				else
+					continue
+				end
+			end
+		end
+	end)
+	loop(1, function()
+		if FishingZone:FindFirstChild("Forsaken Veil - Scylla") then
+			World.Scylla:Visible(true)
+			WorldInfo.Scylla:Visible(true)
+		else
+			World.Scylla:Visible(false)
+			WorldInfo.Scylla:Visible(false)
+			_G.F_Hydra = false
+		end
+	end)
+	loop(1, function()
+		if FishingZone:FindFirstChild("Whales Pool") then
+			World.BlueWhale:Visible(true)
+			WorldInfo.BlueWhale:Visible(true)
+		else
+			World.BlueWhale:Visible(false)
+			WorldInfo.BlueWhale:Visible(false)
+			_G.F_Bluewhale = false
+		end
+	end)
+	loop(1, function()
+		if FishingZone:FindFirstChild("Orcas Pool") then
+			World.Orca:Visible(true)
+			WorldInfo.Orca:Visible(true)
+		else
+			World.Orca:Visible(false)
+			WorldInfo.Orca:Visible(false)
+			_G.F_Orca = false
+		end
+	end)
+	loop(1, function()
+		if FishingZone:FindFirstChild("Megalodon Default") then
+			World.Megalodon:Visible(true)
+			WorldInfo.Megalodon:Visible(true)
+		else
+			World.Megalodon:Visible(false)
+			WorldInfo.Megalodon:Visible(false)
+			_G.F_Megalodon = false
+		end
+	end)
+	loop(1, function()
+		if FishingZone:FindFirstChild("The Kraken Pool") then
+			World.Kraken:Visible(true)
+			WorldInfo.Kraken:Visible(true)
+		else
+			World.Kraken:Visible(false)
+			WorldInfo.Kraken:Visible(false)
+			_G.F_Kraken = false
+		end
+	end)
+	loop(1, function()
+		if FishingZone:FindFirstChild("Whale Shark") then
+			World.WhaleShark:Visible(true)
+			WorldInfo.WhaleShake:Visible(true)
+		else
+			World.WhaleShark:Visible(false)
+			WorldInfo.WhaleShake:Visible(false)
+			_G.F_WhaleShake = false
+		end
+	end)
+	loop(1, function()
+		if FishingZone:FindFirstChild("Great White Shark") then
+			World.GreatWhiteShark:Visible(true)
+			WorldInfo.GreatWhiteShark:Visible(true)
+		else
+			World.GreatWhiteShark:Visible(false)
+			WorldInfo.GreatWhiteShark:Visible(false)
+			_G.F_GreatWhiteShark = false
+		end
+	end)
+	loop(1, function()
+		if FishingZone:FindFirstChild("Great Hammer Shark") then
+			World.GreatHammerShark:Visible(true)
+			WorldInfo.GreathammerShark:Visible(true)
+		else
+			World.GreatHammerShark:Visible(false)
+			WorldInfo.GreathammerShark:Visible(false)
+			_G.F_GreathammerShark = false
+		end
+	end)
+	loop(1, function()
+		if workspace:FindFirstChild("Merchant Boat", true) then
+			World.Merchant:Visible(true)
+			WorldInfo.Mercant:Visible(true)
+		else
+			World.Merchant:Visible(false)
+			WorldInfo.Mercant:Visible(false)
+		end
+	end)
+	loop(1,function()
+		if workspace.MeteorItems:FindFirstChildOfClass("Model") then
+			World.Meteor:Visible(true)
+			WorldInfo.Meteor:Visible(true)
+		else
+			World.Meteor:Visible(false)
+			WorldInfo.Meteor:Visible(false)
+		end
+	end)
+	loop(1, function()
+		if workspace.ActiveChestsFolder:FindFirstChild("Pad", true) then
+			World.Sunken:Visible(true)
+			WorldInfo.Sunken:Visible(true)
+		else
+			World.Sunken:Visible(false)
+			WorldInfo.Sunken:Visible(false)
+		end
+	end)
+	rendersteped:Connect(function()
+		if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
+			RodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
+			local humanoid = Character:FindFirstChildOfClass("Humanoid")
+			for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+				if track.Animation.AnimationId == "rbxassetid://134146970600575" then 
+					pcall(function()
+						if _G.Game.Fisch.ModeFishing == "Instant" then
+							game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("reel"):Destroy()
+							game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
+							Character:FindFirstChild(RodName).events.reset:FireServer()
+							Character:FindFirstChild(RodName).Parent = Backpack
+							Character:FindFirstChild(RodName).Parent = Backpack
+							LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
+						end
+					end)
+				end
+			end
+			for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+				if track.Animation.AnimationId == "rbxassetid://113972107465696" or
+					track.Animation.AnimationId == "rbxassetid://76859144349008" then
+					track:AdjustSpeed(9e9)
+					track:Destroy()
+				end
+			end
+			for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+				if track.Animation.AnimationId == "rbxassetid://121544683887361" then
+					track:Play(0.01, 0.01, 0.01)
+				end
+			end
+			pcall(function()
+				local rod = LocalPlayer.Character:FindFirstChild(RodName)
+				if rod then
+					local bobber = rod:FindFirstChild("bobber")
+					if bobber then
+						if bobber:FindFirstChild("handle", true) then
+							bobber:FindFirstChild("handle", true).Parent:Destroy()
+							if bobber.Stock then
+								bobber.Stock:Destroy()
+							end
+							if bobber:FindFirstChild("RopeConstraint") then
+								bobber.RopeConstraint.Lenght = 9e9
+							end
+						end
+					end
+				end
+			end)
+		end
+	end)
+	task.spawn(function()
+		pcall(function()
+			Service.ReplicatedStorage.resources.animations.fishing.waiting:Destroy()
+			Service.ReplicatedStorage.resources.animations.fishing.fling:Destroy()
+			Service.ReplicatedStorage.resources.animations.fishing.pull:Destroy()
+		end)
+	end)
+	task.spawn(function()
+		while task.wait() do
+			if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
+				RodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
+				if Backpack:FindFirstChild(RodName) then
+					LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
+				end
+				if LocalPlayer.Character:FindFirstChild(RodName) and LocalPlayer.Character:FindFirstChild(RodName):FindFirstChild("bobber") then
+					pcall(function()
+						PlayerGui:FindFirstChild("shakeui").safezone:FindFirstChild("button").Size = UDim2.new(1001, 0, 1001, 0)
+						game:GetService("VirtualUser"):Button1Down(Vector2.new(1, 1))
+						game:GetService("VirtualUser"):Button1Up(Vector2.new(1, 1))
+					end)
+				else
+					LocalPlayer.Character:FindFirstChild(RodName).events.cast:FireServer(_G.Game.Fisch.Cast, 1)
+				end
+				if _G.Game.Fisch.AllEvents then
+					if not _G.WhaleShark or not _G.F_GreatWhiteShark or not _G.F_GreathammerShark or not _G.F_Kraken or not _G.F_Orca or not _G.F_Bluewhale or not _G.F_Megalodon or not _G.F_Hydra then
+						pcall(function()
+							for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+								if table.find(_G.Game.Fisch.SelectZoneEvents, v.Name) then 
+									if string.find(v.Name, "Scylla") then
+										tp(CFrame.new(-2172, -11218, 7060))
+										spin(Vector3.new(180, 81.55699920654297, 180))
+									elseif v.Name == "Whales Pool" then
+										tp(CFrame.new(GetY(v)) * CFrame.new(0,5,0))
+										if Character:FindFirstChild("HumanoidRootPart") then
+											Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
+										end
+									elseif v.Name == "Orcas Pool" then
+										tp(CFrame.new(GetY(v)) * CFrame.new(0,3,50))
+										if Character:FindFirstChild("HumanoidRootPart") then
+											Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
+										end
+									elseif v.Name == "The Kraken Pool" then
+										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+									elseif v.Name == "Great White Shark" then
+										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+									elseif v.Name == "Megalodon Default" then
+										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+									elseif v.Name == "Great Hammerhead Shark" then
+										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+									elseif v.Name == "Whale Shark" then
+										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+									else
+										continue
+									end
+								end
+							end
+						end)
+					end
+				end
+			end
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
+			pcall(function()
+				if _G.Game.Fisch.ModeFishing == "Instant" then
+					if PlayerGui.reel then
+						Service.ReplicatedStorage.events["reelfinished "]:FireServer(100, true)
+					end
+				else
+					PlayerGui.reel.bar.playerbar.Size = UDim2.new(1, 0, 1, 0)
+				end
+			end)
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
+			pcall(function()
+				if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
+					PlayerGui:FindFirstChild("shakeui").safezone:FindFirstChild("button").Size = UDim2.new(1001, 0, 1001, 0)
+					game:GetService("VirtualUser"):Button1Down(Vector2.new(1, 1))
+					game:GetService("VirtualUser"):Button1Up(Vector2.new(1, 1))
+				end
+			end)
+		end
+	end)
+	getgenv().First = {
+		Orca = false,
+		Megalodon = false,
+		LoveEel = false,
+		Merchant = false,
+		Meteor = false,
+		GWS = false,
+		WS = false,
+		GHS = false,
+		Kraken = false,
+		Sunken = false,
+		wp = false,
+		sc = false
+	}
+	function sendEventNotification(zoneName, webhooks)
+		local currentTime = os.date("%H:%M:%S")
+		local maxPlayers = 15
+		local success = sendwebhook(webhooks, {
+			["content"] = "",
+			["embeds"] = {
+				{
+					["id"] = 661605297,
+					["title"] = "Events",
+					["description"] = zoneName .. "\n```" .. _jobid .. "```" .. "\nจำนวนผู้เล่น: " .. _allplayers .. "/" .. maxPlayers,
+					["color"] = 16777215,
+					["fields"] = {},
+					["thumbnail"] = {
+						["url"] = "https://cdn.discordapp.com/attachments/1221930856394919937/1336015603420364880/20250131_095628_0000.png"
+					},
+					["footer"] = {
+						["text"] = "Fetching Notify\n" .. currentTime,
+						["icon_url"] = "https://cdn.discordapp.com/attachments/1221930856394919937/1336015603420364880/20250131_095628_0000.png"
+					}
+				}
+			}
+		})
+	end
+	task.spawn(function()
+		if not getgenv().First.Orca then
+			local Orca1 = FishingZone:FindFirstChild("Orcas Pool")
+			if Orca1 then
+				getgenv().First.Orca = true
+				sendEventNotification(Orca1.Name, "https://discord.com/api/webhooks/1338519203325415496/Qaa356uyHqBUvxnh4nVkK8HCZUo0XrWfCHKzqU41KfaXrQd00TustF0IihFQ2B-LHQ39")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.Megalodon then
+			local MZone = FishingZone:FindFirstChild("Megalodon Default")
+			if MZone then
+				getgenv().First.Megalodon = true
+				sendEventNotification(MZone.Name, "https://discord.com/api/webhooks/1338522854416715786/sazJhn6IzhhwDI9vQsyXHuQ-93WEKY829cUY__lQXvzc7Q583NRmheFzYbZAuy53JIV3")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.GWS then
+			local GZone = FishingZone:FindFirstChild("Great White Shark")
+			if GZone then
+				getgenv().First.GWS = true
+				sendEventNotification(GZone.Name, "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.WS then
+			local WZone = FishingZone:FindFirstChild("Whale Shark")
+			if WZone then
+				getgenv().First.WS = true
+				sendEventNotification(WZone.Name, "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.GHS then
+			local WZone = FishingZone:FindFirstChild("Great Hammerhead Shark")
+			if WZone then
+				getgenv().First.GHS = true
+				sendEventNotification(WZone.Name, "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.Kraken then	
+			local KZone = FishingZone:FindFirstChild("The Kraken Pool")
+			if KZone then
+				getgenv().First.Kraken = true
+				sendEventNotification(KZone.Name, "https://discord.com/api/webhooks/1338519263887097958/n6vS90JutckcNxQvcNv9JXjxjq5GkHvFcpNAPKqMBbkH56XG7dtvPqk-zxaEkA9hK-Pw")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.wp then	
+			local KZone = FishingZone:FindFirstChild("Whales Pool")
+			if KZone then
+				getgenv().First.wp = true
+				sendEventNotification(KZone.Name, "https://discord.com/api/webhooks/1338518823204290590/ORJ097Rs241TDO0VEZMHMg6fz9xH_cEQCSGxKipnM1NlY152nkqc2TCuMwb9JcgjgQV5")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.sc then	
+			local KZone = FishingZone:FindFirstChild("Forsaken Veil - Scylla")
+			if KZone then
+				getgenv().First.sc = true
+				sendEventNotification(KZone.Name, "https://discord.com/api/webhooks/1348366723874553968/yhZkVhEAuTHtPI6bqDf6Q3kNAMXcFbC1-qLV2T9G0DGJjSEyP2RSTqFyV_wnEU3KR81C")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.Merchant then
+			local Merc = workspace:FindFirstChild("Merchant Boat", true)
+			if Merc then
+				getgenv().First.Merchant=true
+				sendEventNotification("Merchant", "https://discord.com/api/webhooks/1338519368799359067/Tvykx7EnLizCpMfo4fGG4nXS3yLWcuLbAxiai9VVY-OloAjH6Dd-GecNlgnuBklZT-7V")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.Sunken then
+			local met1 = workspace.ActiveChestsFolder:FindFirstChild("Pad", true)
+			if met1 then
+				getgenv().First.Sunken = true
+				sendEventNotification("Sunken Chest", "https://discord.com/api/webhooks/1338525786910756928/tdglLSAlBTqc6_W5kRRq2_qffun56i6-rS6z7NjrG195Y-NH5a_S3IglA0b6kkbBLV2r")
+			end
+		end
+	end)
+	task.spawn(function()
+		if not getgenv().First.Meteor then
+			local metoe22 = workspace.MeteorItems:FindFirstChildOfClass("Model")
+			if metoe22 then
+				getgenv().First.Meteor = true
+				sendEventNotification("Meteor", "https://discord.com/api/webhooks/1338519482343100567/9NBxTE3oELphoXGRCSbRSUNS3O5UB1ZHbjsCwSVGISsMLQHz5beZvRf9vmwqALnw5Gka")
+			end
+		end
+	end)
+	-------------------------------------------------------- Child Added
+	task.spawn(function()
+		local meteorFolder = workspace:FindFirstChild("MeteorItems")
+		if meteorFolder then
+			meteorFolder.ChildAdded:Connect(function(child)
+				if child:IsA("Model") then
+					sendEventNotification("Meteor", "https://discord.com/api/webhooks/1338519482343100567/9NBxTE3oELphoXGRCSbRSUNS3O5UB1ZHbjsCwSVGISsMLQHz5beZvRf9vmwqALnw5Gka")
+				end
+			end)
+		end
+	end)
+	task.spawn(function()
+		local meteorFolder = workspace:FindFirstChild("ActiveChestsFolder")
+		if meteorFolder then
+			meteorFolder.ChildAdded:Connect(function(child)
+				if child:IsA("Model") then
+					sendEventNotification("Sunken Chest", "https://discord.com/api/webhooks/1338525786910756928/tdglLSAlBTqc6_W5kRRq2_qffun56i6-rS6z7NjrG195Y-NH5a_S3IglA0b6kkbBLV2r")
+				end
+			end)
+		end
+	end)
+	task.spawn(function()
+		workspace.ChildAdded:Connect(function(child)
+			if child.Name == "Merchant Boat" then
+				sendEventNotification("Merchant", "https://discord.com/api/webhooks/1338525786910756928/tdglLSAlBTqc6_W5kRRq2_qffun56i6-rS6z7NjrG195Y-NH5a_S3IglA0b6kkbBLV2r")
+			end
+		end)
+	end)
+	childsendevents=function(v, web)
+		local temzone = workspace.zones:FindFirstChild("fishing")
+		if temzone then
+			temzone.ChildAdded:Connect(function(child)
+				if child.Name == v then
+					sendEventNotification(v, web)
+				end
+			end)
+		end
+	end
+	task.spawn(function()
+		childsendevents("Forsaken Veil - Scylla", "https://discord.com/api/webhooks/1348366723874553968/yhZkVhEAuTHtPI6bqDf6Q3kNAMXcFbC1-qLV2T9G0DGJjSEyP2RSTqFyV_wnEU3KR81C")
+		childsendevents("Orcas Pool", "https://discord.com/api/webhooks/1338519203325415496/Qaa356uyHqBUvxnh4nVkK8HCZUo0XrWfCHKzqU41KfaXrQd00TustF0IihFQ2B-LHQ39")
+		childsendevents("Megalodon Default", "https://discord.com/api/webhooks/1338522854416715786/sazJhn6IzhhwDI9vQsyXHuQ-93WEKY829cUY__lQXvzc7Q583NRmheFzYbZAuy53JIV3")
+		childsendevents("Great Hammerhead Shark", "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
+		childsendevents("Whale Shark", "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
+		childsendevents("Great White Shark", "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
+		childsendevents("The Kraken Pool", "https://discord.com/api/webhooks/1338519263887097958/n6vS90JutckcNxQvcNv9JXjxjq5GkHvFcpNAPKqMBbkH56XG7dtvPqk-zxaEkA9hK-Pw")
+		childsendevents("Whales Pool", "https://discord.com/api/webhooks/1338518823204290590/ORJ097Rs241TDO0VEZMHMg6fz9xH_cEQCSGxKipnM1NlY152nkqc2TCuMwb9JcgjgQV5")
+	end)
 end
 
 
 
 
-spawn(function()
+task.spawn(function()
 	while task.wait() do
 		pcall(function()
-			if _G.Lock or _G.Tween then
+			if _G.Lock or _G.Tween or _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
 				if syn then
 					setfflag("HumanoidParallelRemoveNoPhysics", "False")
 					setfflag("HumanoidParallelRemoveNoPhysicsNoSimulate2", "False")
@@ -4383,20 +5518,14 @@ local TeleportCheck = false
 LocalPlayer.OnTeleport:Connect(function(State)
 	if _G.Config['Keep Script'] and (not TeleportCheck) and queueteleport then
 		TeleportCheck = true
-		queueteleport("loadstring(game:HttpGet(''))()")
+		if _G.Thailand or getgenv().Thai or _G.Thai then
+			queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/G1GX/Fetching/refs/heads/main/Master/Thai'))()")
+		else
+			queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/G1GX/Fetching/refs/heads/main/Master/eng'))()")
+		end
 	end
 end);
 
 if _executor == "Xeno" or _executor == "Solara" or _executor == "Vega X" then
 	Notify(15, "Low UNC Dectection", "ตรวจพบตัวรัน UNC ต่ำ", "Warning Low UNC may not Support Some Function.", "ระวัง ตัวรันของคุณ UNC ต่ำเกิดไปบางฟังชั่นอาจไม่ทำงาน")
 end
-
---[[task.spawn(function()
-	while task.wait() do
-		if _G.In then
-			repeat task.wait()
-				
-			until Character[RodName]:FindFirstChild("Hitbox", true)
-		end
-	end
-end)]]--
