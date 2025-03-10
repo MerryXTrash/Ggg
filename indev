@@ -5159,14 +5159,14 @@ elseif Fisch then
 			WorldInfo.Sunken:Visible(false)
 		end
 	end)
-	rendersteped:Connect(function()
+	loop(0.1, function()
 		if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
 			RodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
 			local humanoid = Character:FindFirstChildOfClass("Humanoid")
 			for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
 				if track.Animation.AnimationId == "rbxassetid://134146970600575" then 
 					pcall(function()
-						if _G.Game.Fisch.ModeFishing == "Instant" then
+						if _G.Game.Fisch.ModeFishing == "Immediate" then
 							game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("reel"):Destroy()
 							game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
 							Character:FindFirstChild(RodName).events.reset:FireServer()
@@ -5196,12 +5196,6 @@ elseif Fisch then
 					if bobber then
 						if bobber:FindFirstChild("handle", true) then
 							bobber:FindFirstChild("handle", true).Parent:Destroy()
-							if bobber.Stock then
-								bobber.Stock:Destroy()
-							end
-							if bobber:FindFirstChild("RopeConstraint") then
-								bobber.RopeConstraint.Lenght = 9e9
-							end
 						end
 					end
 				end
