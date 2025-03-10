@@ -46,7 +46,6 @@ _G.Config = {
 _G.Game = {
 	Fisch = {
 		AutomaticFishing = false,
-		ModeFishing = "Instant",
 		AllEvents = false,
 		SelectZoneEvents = {"Megalodon Default", "Whales Pool"},
 		WalkOnWater = true,
@@ -991,7 +990,7 @@ function Library:CreateWindow(info)
 				0,
 				false
 			)
-			local tween = Service.TweenService:Create(object, tweenInfo, {Position = randomPosition})
+			local tween = game:GetService("TweenService"):Create(object, tweenInfo, {Position = randomPosition})
 			tween:Play()
 			tween.Completed:Wait()
 			object.Position = checkBoundaries(object)
@@ -3388,7 +3387,7 @@ function Library:CreateWindow(info)
 
 		lak2(Click_1, Closeui)
 		local OpenUI = true
-		Service.UserInputService.InputBegan:Connect(function(input)
+		UserInputService.InputBegan:Connect(function(input)
 			if input.KeyCode == Keycode then
 				if OpenUI then
 					OpenUI = false
@@ -3396,7 +3395,6 @@ function Library:CreateWindow(info)
 					for i = 1,2 do
 						BlurFrame2[i]:Destroy()
 					end
-
 				else
 					OpenUI = true
 					Background_1.Visible = true
@@ -4613,15 +4611,6 @@ elseif Fisch then
 			Game_SaveSettings()
 		end,
 	})
-	TabFisch.Ganeral:CreateSelect({
-		Title = tranlate("Fishing Mode", "โหมดการตกปลา"),
-		Value = _G.Game.Fisch.ModeFishing,
-		List = {"Immediate","Instant", "Normal"},
-		Callback = function(v)
-			_G.Game.Fisch.ModeFishing = v
-			Game_SaveSettings()
-		end,
-	})
 	TabFisch.Ganeral:CreateToggle({
 		Title = tranlate("Enable Track Events", "เปิดใช้งานการแทรกอีเว้นท์"),
 		Value =  _G.Game.Fisch.AllEvents,
@@ -5159,20 +5148,53 @@ elseif Fisch then
 			WorldInfo.Sunken:Visible(false)
 		end
 	end)
-	loop(0.1, function()
+	function Water()
+		local n, md = nil, math.huge
+		for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+			if v:IsA('Part') then
+				local dist = (game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").Position - v.Position).Magnitude
+				if dist < md then
+					n, md = v, dist
+				end
+			end
+		end
+		if n then
+			return n
+		end
+	end
+	loop(0, function()
+		pcall(function()
+			if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
+				local rod = LocalPlayer.Character:FindFirstChild(RodName)
+				if rod then
+					local bobber = rod:FindFirstChild("bobber")
+					if bobber then
+						if bobber:FindFirstChild("handle", true) then
+							bobber:FindFirstChild("handle", true).Parent:Destroy()
+						end
+						bobber.CFrame = CFrame.new(bobber.CFrame.X, Water().Position.Y + Water().Size.Y / 2, bobber.CFrame.Z)
+					end
+				end
+			end
+		end)
+	end)
+	loop(0,function()
 		if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
 			RodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
 			local humanoid = Character:FindFirstChildOfClass("Humanoid")
 			for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
 				if track.Animation.AnimationId == "rbxassetid://134146970600575" then 
 					pcall(function()
-						if _G.Game.Fisch.ModeFishing == "Immediate" then
+						if _G.Game.Fisch.ModeFishing == "Instant" then
 							game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("reel"):Destroy()
 							game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
 							Character:FindFirstChild(RodName).events.reset:FireServer()
 							Character:FindFirstChild(RodName).Parent = Backpack
 							Character:FindFirstChild(RodName).Parent = Backpack
 							LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
+							LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
+							Character:FindFirstChild(RodName).Parent = Backpack
+							Character:FindFirstChild(RodName).Parent = Backpack
 						end
 					end)
 				end
@@ -5189,17 +5211,6 @@ elseif Fisch then
 					track:Play(0.01, 0.01, 0.01)
 				end
 			end
-			pcall(function()
-				local rod = LocalPlayer.Character:FindFirstChild(RodName)
-				if rod then
-					local bobber = rod:FindFirstChild("bobber")
-					if bobber then
-						if bobber:FindFirstChild("handle", true) then
-							bobber:FindFirstChild("handle", true).Parent:Destroy()
-						end
-					end
-				end
-			end)
 		end
 	end)
 	task.spawn(function()
@@ -5267,13 +5278,7 @@ elseif Fisch then
 	task.spawn(function()
 		while task.wait() do
 			pcall(function()
-				if _G.Game.Fisch.ModeFishing == "Instant" then
-					if PlayerGui.reel then
-						Service.ReplicatedStorage.events["reelfinished "]:FireServer(100, true)
-					end
-				else
-					PlayerGui.reel.bar.playerbar.Size = UDim2.new(1, 0, 1, 0)
-				end
+				PlayerGui.reel.bar.playerbar.Size = UDim2.new(1, 0, 1, 0)
 			end)
 		end
 	end)
