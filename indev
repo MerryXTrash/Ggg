@@ -564,10 +564,8 @@ if game:GetService("CoreGui"):FindFirstChild("Fetching") then
 	game:GetService("CoreGui"):FindFirstChild("Fetching"):Destroy()
 end
 Library = {}
-BlurFrameL = loadstring(game:HttpGet('https://raw.githubusercontent.com/aresZee7/aresLibrary/main/BlurFrame'))()
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "Fetching"
-ScreenGui.IgnoreGuiInset = true
 ScreenGui.Parent = not game:GetService("RunService"):IsStudio() and game:GetService("CoreGui") or game:GetService("Players").LocalPlayer.PlayerGui
 
 function Library:CreateWindow(info)
@@ -577,6 +575,7 @@ function Library:CreateWindow(info)
 	local U, Tw =
 		game:GetService("UserInputService"),
 	game:GetService("TweenService")
+	local HAA, R = false, false
 	local function gl(i)
 		if type(i) == 'string' and not i:find('rbxassetid://') then
 			return "rbxassetid://".. i
@@ -614,38 +613,198 @@ function Library:CreateWindow(info)
 		end)
 	end
 
-
 	local UserInputService = game:GetService("UserInputService")
 
-	local function Resize(DragFrame, Frame)
-		local resizing = false
-		local startSize, startMouse
-		local function StartResize(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				resizing = true
-				startSize = Frame.Size
-				startMouse = UserInputService:GetMouseLocation()
+	local function init(getFrame)
+		local MTREL = "Glass"
+		local binds = {}
+		local root = Instance.new('Folder', workspace.CurrentCamera)
+		root.Name = 'BlurSnox'
+
+		local gTokenMH = 99999999
+		local gToken = math.random(1, gTokenMH)
+
+		local DepthOfField = Instance.new('DepthOfFieldEffect', game:GetService('Lighting'))
+		DepthOfField.FarIntensity = 0
+		DepthOfField.FocusDistance = 51.6
+		DepthOfField.InFocusRadius = 50
+		DepthOfField.NearIntensity = 1
+		DepthOfField.Name = "DPT_"..gToken
+
+		local frame = Instance.new('Frame')
+		frame.Parent = getFrame
+		frame.Size = UDim2.new(0.95, 0, 0.95, 0)
+		frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+		frame.AnchorPoint = Vector2.new(0.5, 0.5)
+		frame.BackgroundTransparency = 1
+
+		local GenUid; do
+			local id = 0
+			function GenUid()
+				id = id + 1
+				return 'neon::'..tostring(id)
 			end
 		end
-		local function UpdateResize(input)
-			if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-				local mouseDelta = UserInputService:GetMouseLocation() - startMouse
-				local newSize = startSize + UDim2.new(0, mouseDelta.X, 0, mouseDelta.Y)
-				newSize = UDim2.new(0, math.max(newSize.X.Offset, 540), 0, math.max(newSize.Y.Offset, 350))
-				Frame.Size = newSize
+
+		do
+			local function IsNotNaN(x)
+				return x == x
+			end
+			local continue = IsNotNaN(workspace.CurrentCamera:ScreenPointToRay(0,0).Origin.x)
+			while not continue do
+				game:GetService('RunService').RenderStepped:wait()
+				continue = IsNotNaN(workspace.CurrentCamera:ScreenPointToRay(0,0).Origin.x)
 			end
 		end
-		local function EndResize(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				resizing = false
+
+		local DrawQuad; do
+			local acos, max, pi, sqrt = math.acos, math.max, math.pi, math.sqrt
+			local sz = 0.2
+
+			local function DrawTriangle(v1, v2, v3, p0, p1)
+				local s1 = (v1 - v2).magnitude
+				local s2 = (v2 - v3).magnitude
+				local s3 = (v3 - v1).magnitude
+				local smax = max(s1, s2, s3)
+				local A, B, C
+				if s1 == smax then
+					A, B, C = v1, v2, v3
+				elseif s2 == smax then
+					A, B, C = v2, v3, v1
+				elseif s3 == smax then
+					A, B, C = v3, v1, v2
+				end
+
+				local para = ( (B-A).x*(C-A).x + (B-A).y*(C-A).y + (B-A).z*(C-A).z ) / (A-B).magnitude
+				local perp = sqrt((C-A).magnitude^2 - para*para)
+				local dif_para = (A - B).magnitude - para
+
+				local st = CFrame.new(B, A)
+				local za = CFrame.Angles(pi/2,0,0)
+
+				local cf0 = st
+
+				local Top_Look = (cf0 * za).lookVector
+				local Mid_Point = A + CFrame.new(A, B).lookVector * para
+				local Needed_Look = CFrame.new(Mid_Point, C).lookVector
+				local dot = Top_Look.x*Needed_Look.x + Top_Look.y*Needed_Look.y + Top_Look.z*Needed_Look.z
+
+				local ac = CFrame.Angles(0, 0, acos(dot))
+
+				cf0 = cf0 * ac
+				if ((cf0 * za).lookVector - Needed_Look).magnitude > 0.01 then
+					cf0 = cf0 * CFrame.Angles(0, 0, -2*acos(dot))
+				end
+				cf0 = cf0 * CFrame.new(0, perp/2, -(dif_para + para/2))
+
+				local cf1 = st * ac * CFrame.Angles(0, pi, 0)
+				if ((cf1 * za).lookVector - Needed_Look).magnitude > 0.01 then
+					cf1 = cf1 * CFrame.Angles(0, 0, 2*acos(dot))
+				end
+				cf1 = cf1 * CFrame.new(0, perp/2, dif_para/2)
+
+				if not p0 then
+					p0 = Instance.new('Part')
+					p0.FormFactor = 'Custom'
+					p0.TopSurface = 0
+					p0.BottomSurface = 0
+					p0.Anchored = true
+					p0.CanCollide = false
+					p0.CastShadow = false
+					p0.Material = MTREL
+					p0.Size = Vector3.new(sz, sz, sz)
+					local mesh = Instance.new('SpecialMesh', p0)
+					mesh.MeshType = 2
+					mesh.Name = 'WedgeMesh'
+				end
+				p0.WedgeMesh.Scale = Vector3.new(0, perp/sz, para/sz)
+				p0.CFrame = cf0
+
+				if not p1 then
+					p1 = p0:clone()
+				end
+				p1.WedgeMesh.Scale = Vector3.new(0, perp/sz, dif_para/sz)
+				p1.CFrame = cf1
+
+				return p0, p1
+			end
+
+			function DrawQuad(v1, v2, v3, v4, parts)
+				parts[1], parts[2] = DrawTriangle(v1, v2, v3, parts[1], parts[2])
+				parts[3], parts[4] = DrawTriangle(v3, v2, v4, parts[3], parts[4])
 			end
 		end
-		DragFrame.InputBegan:Connect(StartResize)
-		UserInputService.InputChanged:Connect(UpdateResize)
-		UserInputService.InputEnded:Connect(EndResize)
+
+		if binds[frame] then
+			return binds[frame].parts
+		end
+
+		local uid = GenUid()
+		local parts = {}
+		local f = Instance.new('Folder', root)
+		f.Name = frame.Name
+
+		local parents = {}
+		do
+			local function add(child)
+				if child:IsA'GuiObject' then
+					parents[#parents + 1] = child
+					add(child.Parent)
+				end
+			end
+			add(frame)
+		end
+
+		local function UpdateOrientation(fetchProps)
+			local properties = {
+				Transparency = 0.98;
+				BrickColor = BrickColor.new('Institutional white');
+			}
+			local zIndex = 1 - 0.05*frame.ZIndex
+
+			local tl, br = frame.AbsolutePosition, frame.AbsolutePosition + frame.AbsoluteSize
+			local tr, bl = Vector2.new(br.x, tl.y), Vector2.new(tl.x, br.y)
+			do
+				local rot = 0;
+				for _, v in ipairs(parents) do
+					rot = rot + v.Rotation
+				end
+				if rot ~= 0 and rot%180 ~= 0 then
+					local mid = tl:lerp(br, 0.5)
+					local s, c = math.sin(math.rad(rot)), math.cos(math.rad(rot))
+					local vec = tl
+					tl = Vector2.new(c*(tl.x - mid.x) - s*(tl.y - mid.y), s*(tl.x - mid.x) + c*(tl.y - mid.y)) + mid
+					tr = Vector2.new(c*(tr.x - mid.x) - s*(tr.y - mid.y), s*(tr.x - mid.x) + c*(tr.y - mid.y)) + mid
+					bl = Vector2.new(c*(bl.x - mid.x) - s*(bl.y - mid.y), s*(bl.x - mid.x) + c*(bl.y - mid.y)) + mid
+					br = Vector2.new(c*(br.x - mid.x) - s*(br.y - mid.y), s*(br.x - mid.x) + c*(br.y - mid.y)) + mid
+				end
+			end
+			DrawQuad(
+				workspace.CurrentCamera:ScreenPointToRay(tl.x, tl.y, zIndex).Origin, 
+				workspace.CurrentCamera:ScreenPointToRay(tr.x, tr.y, zIndex).Origin, 
+				workspace.CurrentCamera:ScreenPointToRay(bl.x, bl.y, zIndex).Origin, 
+				workspace.CurrentCamera:ScreenPointToRay(br.x, br.y, zIndex).Origin, 
+				parts
+			)
+			if fetchProps then
+				for _, pt in pairs(parts) do
+					pt.Parent = f
+				end
+				for propName, propValue in pairs(properties) do
+					for _, pt in pairs(parts) do
+						pt[propName] = propValue
+					end
+				end
+			end
+		end
+
+		UpdateOrientation(true)
+		game:GetService('RunService'):BindToRenderStep(uid, 2000, UpdateOrientation)
+		return {
+			DepthOfField,
+			frame
+		}
 	end
-
-
 
 	local function gs(side, pl, pr)
 		if not side then
@@ -873,7 +1032,7 @@ function Library:CreateWindow(info)
 	local ImageLabel_1 = Instance.new("ImageLabel")
 	local TabFrame_1 = Instance.new("Frame")
 	local Shadow = Instance.new("ImageLabel")
-	local resize = Instance.new("Frame")
+	local resize = Instance.new("TextButton")
 	local effect = Instance.new("ImageLabel")
 	local effectcircle = Instance.new("ImageLabel")
 	local effectcircle2 = Instance.new("ImageLabel")
@@ -893,21 +1052,21 @@ function Library:CreateWindow(info)
 	Background_1.BorderSizePixel = 0
 	Background_1.Position = UDim2.new(0.5, 0,0.5, 0)
 	Background_1.Size = Size
-	local BlurFrame2 = BlurFrameL:BlurFrame(Background_1)
+	local BlurFrame2 = init(Background_1)
 	UICorner_1.Parent = Background_1
 
 	UIStroke_1.Parent = Background_1
 	UIStroke_1.Color = Color3.fromRGB(47,48,51)
 	UIStroke_1.Transparency = 0.3
 	UIStroke_1.Thickness = 3
-	
+
 	resize.Parent = Background_1
-	resize.Size = UDim2.new(0, 65, 0, 65)
-	resize.Position = UDim2.new(1, -20, 1, -20)
+	resize.AnchorPoint = Vector2.new(1, 1)
+	resize.Size = UDim2.new(0, 25, 0, 25)
+	resize.Position = UDim2.new(1, 0, 1, 0)
 	resize.BackgroundTransparency = 1
 	resize.BorderSizePixel = 0
-
-	Resize(resize, Background_1)
+	resize.Text = ''
 
 	frameef.Parent = Background_1
 	frameef.BackgroundTransparency = 1
@@ -2024,7 +2183,7 @@ function Library:CreateWindow(info)
 				ImageLabel_1D.Image = "rbxassetid://13858857904"
 				ImageLabel_1D.ImageTransparency = 0.5
 				ImageLabel_1D.Rotation = 90
-				
+
 				local MainDD = Instance.new("Frame")
 				local DropdownSelect = Instance.new("Frame")
 				local UICorner_1 = Instance.new("UICorner")
@@ -2038,7 +2197,7 @@ function Library:CreateWindow(info)
 				local UIPadding_2 = Instance.new("UIPadding")
 				local ScrollingFrame_1 = Instance.new("ScrollingFrame")
 				local UIListLayout_2 = Instance.new("UIListLayout")
-				
+
 				MainDD.Name = "Frame2"
 				MainDD.Parent = Background_1
 				MainDD.AnchorPoint = Vector2.new(0.5,0.5)
@@ -2050,7 +2209,8 @@ function Library:CreateWindow(info)
 				MainDD.Size = UDim2.new(0, 300,0, 0)
 				MainDD.Visible = false
 				MainDD.ClipsDescendants = false
-				
+				MainDD.Name = 'Dropdown Select'
+
 				local Shadow = Instance.new("ImageLabel")
 				Shadow.Parent = MainDD
 				Shadow.Name = "DropShadow"
@@ -2071,7 +2231,7 @@ function Library:CreateWindow(info)
 				Shadow.TileSize = UDim2.new(1, 0, 1, 0)
 				Shadow.SliceCenter = Rect.new(99, 99, 99, 99)
 				Shadow.ZIndex = 1
-				
+
 				DropdownSelect.Name = "DropdownSelect"
 				DropdownSelect.Parent = MainDD
 				DropdownSelect.AnchorPoint = Vector2.new(0.5,0.5)
@@ -2082,7 +2242,7 @@ function Library:CreateWindow(info)
 				DropdownSelect.Position = UDim2.new(0.5, 0,0.5, 0)
 				DropdownSelect.Size = UDim2.new(1, 0,1, 0)
 				DropdownSelect.ClipsDescendants = true
-				
+
 
 				UICorner_1.Parent = DropdownSelect
 
@@ -2195,28 +2355,33 @@ function Library:CreateWindow(info)
 					tw({v = DropdownSelect, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Size = UDim2.new(0, 300, 0, 300), Position = UDim2.new(0.5, 0, 0.5, 0)}}):Play()
 					tw({v = UIStroke_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Transparency = 0}}):Play()
 					tw({v = ImageLabel_1D, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Rotation = 0}}):Play()
+					isopen = true	
 				end
 
 				local function close()
-					MainDD.Visible = false
-					tw({v = DropdownSelect, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Size = UDim2.new(0, 300, 0, 0)}}):Play()
+					local gdsg = tw({v = DropdownSelect, t = 0.15, s = Enum.EasingStyle.Exponential, d = "Out", g = {Size = UDim2.new(0, 300, 0, 0)}})
+					gdsg:Play()
 					tw({v = ImageLabel_1D, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Rotation = 90}}):Play()
 					tw({v = UIStroke_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Transparency = 1}}):Play()
+					gdsg.Completed:Connect(function()
+						MainDD.Visible = false
+					end)
 					isopen = false
-				end
+				end	
 
-				game:GetService "UserInputService".InputBegan:Connect(function(A)
+				UserInputService.InputBegan:Connect(function(A)
 					if A.UserInputType == Enum.UserInputType.MouseButton1 or A.UserInputType == Enum.UserInputType.Touch then
 						local B, C = DropdownSelect.AbsolutePosition, DropdownSelect.AbsoluteSize
 						if game:GetService "Players".LocalPlayer:GetMouse().X < B.X or game:GetService "Players".LocalPlayer:GetMouse().X > B.X + C.X or game:GetService "Players".LocalPlayer:GetMouse().Y < (B.Y - 20 - 1) or game:GetService "Players".LocalPlayer:GetMouse().Y > B.Y + C.Y then
-							close()
+							if isopen then
+								close()
+							end
 						end
 					end
 				end)
 
 				Click.MouseButton1Click:Connect(function()
-					isopen = not isopen
-					if isopen then
+					if not isopen then
 						open()
 					else
 						close()
@@ -2581,7 +2746,7 @@ function Library:CreateWindow(info)
 				TextBox_1.BorderSizePixel = 0
 				TextBox_1.Size = UDim2.new(1, 0,1, 0)
 				TextBox_1.Font = Enum.Font.GothamBold
-				TextBox_1.Text = tostring(Key)
+				TextBox_1.Text = tostring(Key):gsub("Enum.KeyCode.", "")
 				TextBox_1.TextColor3 = Color3.fromRGB(255,255,255)
 				TextBox_1.TextSize = 14
 				TextBox_1.TextTruncate = Enum.TextTruncate.AtEnd
@@ -3130,6 +3295,7 @@ function Library:CreateWindow(info)
 				UICorner_1.Parent = Image_1
 				UICorner_1.CornerRadius = UDim.new(0,4)
 			end
+
 			function Main:Line()
 				local Line_1 = Instance.new("Frame")
 				Line_1.Name = "Line"
@@ -3141,6 +3307,7 @@ function Library:CreateWindow(info)
 				Line_1.Position = UDim2.new(0, 0,1, 0)
 				Line_1.Size = UDim2.new(1, 0,0, 2)
 			end
+
 			return Main
 		end	
 		return Sections
@@ -3363,6 +3530,41 @@ function Library:CreateWindow(info)
 			task.wait(0.4)
 		end)
 
+		if not HAA then
+			local AP, PAZ = Background_1.AbsolutePosition, Background_1.Parent.AbsoluteSize
+			local NP = UDim2.new((AP.X / PAZ.X),
+				Background_1.Position.X.Offset,
+				(AP.Y / PAZ.Y),
+				Background_1.Position.Y.Offset)
+
+			Background_1.AnchorPoint = Vector2.new(0, 0)
+			Background_1.Position = NP
+			HAA = true
+		end
+
+		resize.MouseButton1Down:Connect(function()
+			R = true
+		end)
+
+		resize.TouchTap:Connect(function()
+			R = true
+		end)
+
+		U.InputEnded:Connect(function(i)
+			if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+				R = false
+			end
+		end)
+
+		U.InputChanged:Connect(function(i)
+			if R and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then
+				local nW = math.max(480, i.Position.X - Background_1.AbsolutePosition.X)
+				local nH = math.max(300, i.Position.Y - Background_1.AbsolutePosition.Y)
+				local nZ = UDim2.new(0, nW, 0, nH)
+				tw({v = Background_1, t = 0.15, s = Enum.EasingStyle.Linear, d = "Out", g = {Size = nZ}}):Play()
+			end
+		end)
+
 
 		ImageLabel_1.Parent = Closeui
 		ImageLabel_1.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3388,28 +3590,7 @@ function Library:CreateWindow(info)
 
 		lak2(Click_1, Closeui)
 		local OpenUI = true
-		UserInputService.InputBegan:Connect(function(input)
-			if input.KeyCode == Keycode then
-				if OpenUI then
-					OpenUI = false
-					Background_1.Visible = false
-					for i = 1,2 do
-						BlurFrame2[i]:Destroy()
-					end
-				else
-					OpenUI = true
-					Background_1.Visible = true
-					BlurFrame2 = BlurFrameL:BlurFrame(Background_1)
-				end
-				tw({v = Closeui, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {BackgroundColor3 = Color3.fromRGB(31, 34, 40)}}):Play()
-				tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.80, 0, 0.80, 0)}}):Play()
-				delay(0.016, function()
-					tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.9, 0, 0.9, 0)}}):Play()
-					tw({v = Closeui, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {BackgroundColor3 = Color3.fromRGB(36, 39, 46)}}):Play()
-				end)
-			end
-		end)
-		Click_1.MouseButton1Click:Connect(function()
+		local function o()
 			if OpenUI then
 				OpenUI = false
 				Background_1.Visible = false
@@ -3421,7 +3602,7 @@ function Library:CreateWindow(info)
 				OpenUI = true
 				Background_1.Visible = true
 				frameef.Visible = true
-				BlurFrame2 = BlurFrameL:BlurFrame(Background_1)
+				BlurFrame2 = init(Background_1)
 			end
 			tw({v = Closeui, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {BackgroundColor3 = Color3.fromRGB(31, 34, 40)}}):Play()
 			tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.80, 0, 0.80, 0)}}):Play()
@@ -3429,7 +3610,13 @@ function Library:CreateWindow(info)
 				tw({v = ImageLabel_1, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {Size = UDim2.new(0.9, 0, 0.9, 0)}}):Play()
 				tw({v = Closeui, t = 0.15, s = Enum.EasingStyle.Back, d = "Out", g = {BackgroundColor3 = Color3.fromRGB(36, 39, 46)}}):Play()
 			end)
+		end
+		UserInputService.InputBegan:Connect(function(input)
+			if input.KeyCode == Keycode then
+				o()
+			end
 		end)
+		Click_1.MouseButton1Click:Connect(o)
 	end
 
 	return Library.Tabs
@@ -3594,9 +3781,11 @@ TabOptions.Settings:CreateToggle({
 task.spawn(function()
 	while task.wait() do
 		if _G.Config.GPP then
-			if LocalPlayer.GameplayPaused == true then
-				LocalPlayer.GameplayPaused = false
-			end
+			pcall(function()
+				if LocalPlayer.GameplayPaused == true then
+					LocalPlayer.GameplayPaused = false
+				end
+			end)
 		end
 	end
 end)
@@ -4575,7 +4764,7 @@ elseif Fisch then
 			Icon = Icons.cube
 		});
 		['Rods'] = General:CreateTab({
-			Title = tranlate("Rods", "เบ็ด"),
+			Title = tranlate("Dupe", "ดูป"),
 			Icon = 135502990773578
 		});
 		['Items'] = General:CreateTab({
@@ -4902,7 +5091,28 @@ elseif Fisch then
 		})
 	}
 	TabFisch.Items:CreateSection({Title = tranlate("Soon !", "กำลังมา !")})
-	TabFisch.Rods:CreateSection({Title = tranlate("Soon !", "กำลังมา !")})
+	TabFisch.Rods:CreateSection({Title = tranlate("Level", "ปั้มเลเวล")})
+	TabFisch.Rods:CreateToggle({
+		Title = tranlate("Dupe Level", "เสกเลเวล"),
+		Desc = tranlate("Required Fish : Aligator", "ต้องการปลา : Aligator"),
+		Value =  _G.LAL,
+		Callback = function(v)
+			_G.LAL = v
+		end,
+	});
+	rendersteped:Connect(function()
+		pcall(function()
+			if _G.LAL and game.Players.LocalPlayer.leaderstats.Level.Value < 1000 then
+				for p = 1, 50 do
+					for i = 1, 10 do
+						task.spawn(function()
+							workspace:WaitForChild("world"):WaitForChild("npcs"):WaitForChild("Agaric"):WaitForChild("Agaric"):WaitForChild("complete"):InvokeServer()
+						end)
+					end
+				end
+			end
+		end)
+	end)
 	TabFisch.More:CreateSection({Title = tranlate("Soon !", "กำลังมา !")})
 	TabFisch.Location:CreateSection({Title = tranlate("Island", "เกาะ")})
 	IslandSelect = "nil"
@@ -5053,7 +5263,7 @@ elseif Fisch then
 			end
 		end
 	end)
-	loop(1, function()
+	rendersteped:Connect(function()
 		if FishingZone:FindFirstChild("Forsaken Veil - Scylla") then
 			World.Scylla:Visible(true)
 			WorldInfo.Scylla:Visible(true)
@@ -5062,8 +5272,6 @@ elseif Fisch then
 			WorldInfo.Scylla:Visible(false)
 			_G.F_Hydra = false
 		end
-	end)
-	loop(1, function()
 		if FishingZone:FindFirstChild("Whales Pool") then
 			World.BlueWhale:Visible(true)
 			WorldInfo.BlueWhale:Visible(true)
@@ -5072,8 +5280,22 @@ elseif Fisch then
 			WorldInfo.BlueWhale:Visible(false)
 			_G.F_Bluewhale = false
 		end
-	end)
-	loop(1, function()
+		if FishingZone:FindFirstChild("Whales Pool") then
+			World.BlueWhale:Visible(true)
+			WorldInfo.BlueWhale:Visible(true)
+		else
+			World.BlueWhale:Visible(false)
+			WorldInfo.BlueWhale:Visible(false)
+			_G.F_Bluewhale = false
+		end
+		if FishingZone:FindFirstChild("Whales Pool") then
+			World.BlueWhale:Visible(true)
+			WorldInfo.BlueWhale:Visible(true)
+		else
+			World.BlueWhale:Visible(false)
+			WorldInfo.BlueWhale:Visible(false)
+			_G.F_Bluewhale = false
+		end
 		if FishingZone:FindFirstChild("Orcas Pool") then
 			World.Orca:Visible(true)
 			WorldInfo.Orca:Visible(true)
@@ -5082,8 +5304,6 @@ elseif Fisch then
 			WorldInfo.Orca:Visible(false)
 			_G.F_Orca = false
 		end
-	end)
-	loop(1, function()
 		if FishingZone:FindFirstChild("Megalodon Default") then
 			World.Megalodon:Visible(true)
 			WorldInfo.Megalodon:Visible(true)
@@ -5092,8 +5312,6 @@ elseif Fisch then
 			WorldInfo.Megalodon:Visible(false)
 			_G.F_Megalodon = false
 		end
-	end)
-	loop(1, function()
 		if FishingZone:FindFirstChild("The Kraken Pool") then
 			World.Kraken:Visible(true)
 			WorldInfo.Kraken:Visible(true)
@@ -5102,8 +5320,6 @@ elseif Fisch then
 			WorldInfo.Kraken:Visible(false)
 			_G.F_Kraken = false
 		end
-	end)
-	loop(1, function()
 		if FishingZone:FindFirstChild("Whale Shark") then
 			World.WhaleShark:Visible(true)
 			WorldInfo.WhaleShake:Visible(true)
@@ -5112,8 +5328,6 @@ elseif Fisch then
 			WorldInfo.WhaleShake:Visible(false)
 			_G.F_WhaleShake = false
 		end
-	end)
-	loop(1, function()
 		if FishingZone:FindFirstChild("Great White Shark") then
 			World.GreatWhiteShark:Visible(true)
 			WorldInfo.GreatWhiteShark:Visible(true)
@@ -5122,8 +5336,6 @@ elseif Fisch then
 			WorldInfo.GreatWhiteShark:Visible(false)
 			_G.F_GreatWhiteShark = false
 		end
-	end)
-	loop(1, function()
 		if FishingZone:FindFirstChild("Great Hammer Shark") then
 			World.GreatHammerShark:Visible(true)
 			WorldInfo.GreathammerShark:Visible(true)
@@ -5132,8 +5344,6 @@ elseif Fisch then
 			WorldInfo.GreathammerShark:Visible(false)
 			_G.F_GreathammerShark = false
 		end
-	end)
-	loop(1, function()
 		if workspace:FindFirstChild("Merchant Boat", true) then
 			World.Merchant:Visible(true)
 			WorldInfo.Mercant:Visible(true)
@@ -5141,8 +5351,6 @@ elseif Fisch then
 			World.Merchant:Visible(false)
 			WorldInfo.Mercant:Visible(false)
 		end
-	end)
-	loop(1,function()
 		if workspace.MeteorItems:FindFirstChildOfClass("Model") then
 			World.Meteor:Visible(true)
 			WorldInfo.Meteor:Visible(true)
@@ -5150,8 +5358,6 @@ elseif Fisch then
 			World.Meteor:Visible(false)
 			WorldInfo.Meteor:Visible(false)
 		end
-	end)
-	loop(1, function()
 		if workspace.ActiveChestsFolder:FindFirstChild("Pad", true) then
 			World.Sunken:Visible(true)
 			WorldInfo.Sunken:Visible(true)
@@ -5174,60 +5380,6 @@ elseif Fisch then
 			return n
 		end
 	end
-	loop(0, function()
-		pcall(function()
-			if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
-				local rod = LocalPlayer.Character:FindFirstChild(RodName)
-				if rod then
-					local bobber = rod:FindFirstChild("bobber")
-					if bobber then
-						if bobber:FindFirstChild("handle", true) then
-							bobber:FindFirstChild("handle", true).Parent:Destroy()
-						end
-						bobber.CFrame = CFrame.new(bobber.CFrame.X, Water().Position.Y + Water().Size.Y / 2, bobber.CFrame.Z)
-					end
-				end
-			end
-		end)
-	end)
-	loop(0,function()
-		if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
-			RodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
-			local humanoid = Character:FindFirstChildOfClass("Humanoid")
-			for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
-				if track.Animation.AnimationId == "rbxassetid://134146970600575" then 
-					pcall(function()
-						if _G.Game.Fisch.ModeFishing == "Instant" then
-							game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
-							Character:FindFirstChild(RodName).events.reset:FireServer()
-							game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("reel"):Destroy()
-							game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
-							Character:FindFirstChild(RodName).Parent = Backpack
-							Character:FindFirstChild(RodName).Parent = Backpack
-							LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
-							LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
-							Character:FindFirstChild(RodName).Parent = Backpack
-							Character:FindFirstChild(RodName).Parent = Backpack
-						else
-							game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
-						end
-					end)
-				end
-			end
-		end
-	end)
-	loop(0,function()
-		pcall(function()
-			if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
-				RodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
-				if _G.Game.Fisch.ModeFishing == "Normal" then
-					if PlayerGui.reel then
-						game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
-					end
-				end
-			end
-		end)
-	end)
 	task.spawn(function()
 		pcall(function()
 			Service.ReplicatedStorage.resources.animations.fishing.waiting:Destroy()
@@ -5237,21 +5389,128 @@ elseif Fisch then
 	end)
 	task.spawn(function()
 		while task.wait() do
-			if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
-				RodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
-				local humanoid = Character:FindFirstChildOfClass("Humanoid")
-				if Backpack:FindFirstChild(RodName) then
-					LocalPlayer.Character.Humanoid:EquipTool(Backpack:FindFirstChild(RodName))
+			if _G.Game.Fisch.AutomaticFishing then
+				if _G.Game.Fisch.ModeFishing == "Normal" then
+					if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
+						local rodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
+						local rodTool = Backpack:FindFirstChild(rodName)
+
+						if rodTool then
+							LocalPlayer.Character.Humanoid:EquipTool(rodTool)
+						end
+
+						local equippedRod = LocalPlayer.Character:FindFirstChild(rodName)
+						if equippedRod and PlayerGui:FindFirstChild(rodName) and PlayerGui[rodName]:FindFirstChild("bobber") then
+							pcall(function()
+								local button = PlayerGui:FindFirstChild("shakeui") and PlayerGui.shakeui.safezone:FindFirstChild("button")
+								if button then
+									button.Size = UDim2.new(1001, 0, 1001, 0)
+								end
+								game:GetService("VirtualUser"):Button1Down(Vector2.new(1, 1))
+								game:GetService("VirtualUser"):Button1Up(Vector2.new(1, 1))
+							end)
+						else
+							equippedRod.events.cast:FireServer(_G.Game.Fisch.Cast)
+						end
+						local humanoid = Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+								if track.Animation.AnimationId == "rbxassetid://134146970600575" then
+									pcall(function()
+										game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100, true)
+										equippedRod.Parent = Backpack
+									end)
+								end
+							end
+						end
+					end
 				end
-				if LocalPlayer.Character:FindFirstChild(RodName) and LocalPlayer.Character:FindFirstChild(RodName):FindFirstChild("bobber") then
+				if _G.Game.Fisch.ModeFishing == "Instant" then
+					if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
+						local rodName = Service.ReplicatedStorage.playerstats[LocalPlayer.Name].Stats.rod.Value
+						local rodTool = Backpack:FindFirstChild(rodName)
+
+						if rodTool then
+							LocalPlayer.Character.Humanoid:EquipTool(rodTool)
+						end
+
+						local equippedRod = LocalPlayer.Character:FindFirstChild(rodName)
+						if equippedRod and equippedRod:FindFirstChild("bobber") then
+							pcall(function()
+								local button = PlayerGui:FindFirstChild("shakeui") and PlayerGui.shakeui.safezone:FindFirstChild("button")
+								if button then
+									button.Size = UDim2.new(1001, 0, 1001, 0)
+								end
+								game:GetService("VirtualUser"):Button1Down(Vector2.new(1, 1))
+								game:GetService("VirtualUser"):Button1Up(Vector2.new(1, 1))
+							end)
+						else
+							equippedRod.events.cast:FireServer(_G.Game.Fisch.Cast)
+						end
+
+						local humanoid = Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+								if track.Animation.AnimationId == "rbxassetid://134146970600575" then
+									pcall(function()
+										local reelGui = game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("reel")
+										if reelGui then
+											reelGui:Destroy()
+										end
+										equippedRod.events.reset:FireServer()
+										game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100, true)
+										task.wait(.25)
+										equippedRod.Parent = Backpack
+									end)
+								end
+							end
+						end
+					end
+				end
+			end
+			
+			if _G.Game.Fisch.AllEvents then
+				if not _G.WhaleShark or not _G.F_GreatWhiteShark or not _G.F_GreathammerShark or not _G.F_Kraken or not _G.F_Orca or not _G.F_Bluewhale or not _G.F_Megalodon or not _G.F_Hydra then
 					pcall(function()
-						PlayerGui:FindFirstChild("shakeui").safezone:FindFirstChild("button").Size = UDim2.new(1001, 0, 1001, 0)
-						game:GetService("VirtualUser"):Button1Down(Vector2.new(1, 1))
-						game:GetService("VirtualUser"):Button1Up(Vector2.new(1, 1))
+						for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+							if table.find(_G.Game.Fisch.SelectZoneEvents, v.Name) then 
+								if string.find(v.Name, "Scylla") then
+									tp(CFrame.new(-2172, -11218, 7060))
+									spin(Vector3.new(180, 81.55699920654297, 180))
+								elseif v.Name == "Whales Pool" then
+									tp(CFrame.new(GetY(v)) * CFrame.new(0,5,0))
+									if Character:FindFirstChild("HumanoidRootPart") then
+										Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
+									end
+								elseif v.Name == "Orcas Pool" then
+									tp(CFrame.new(GetY(v)) * CFrame.new(0,3,50))
+									if Character:FindFirstChild("HumanoidRootPart") then
+										Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
+									end
+								elseif v.Name == "The Kraken Pool" then
+									tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+								elseif v.Name == "Great White Shark" then
+									tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+								elseif v.Name == "Megalodon Default" then
+									tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+								elseif v.Name == "Great Hammerhead Shark" then
+									tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+								elseif v.Name == "Whale Shark" then
+									tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+								else
+									continue
+								end
+							end
+						end
 					end)
-				else
-					LocalPlayer.Character:FindFirstChild(RodName).events.cast:FireServer(_G.Game.Fisch.Cast, 1)
 				end
+			end
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
+			if _G.Game.Fisch.AutomaticFishing or _G.WhaleShark or _G.F_GreatWhiteShark or _G.F_GreathammerShark or _G.F_Kraken or _G.F_Orca or _G.F_Bluewhale or _G.F_Megalodon or _G.F_Hydra then
+				local humanoid = Character:FindFirstChildOfClass("Humanoid")
 				for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
 					if track.Animation.AnimationId == "rbxassetid://113972107465696" or
 						track.Animation.AnimationId == "rbxassetid://76859144349008" then
@@ -5264,50 +5523,13 @@ elseif Fisch then
 						track:Play(0.01, 0.01, 0.01)
 					end
 				end
-				if _G.Game.Fisch.AllEvents then
-					if not _G.WhaleShark or not _G.F_GreatWhiteShark or not _G.F_GreathammerShark or not _G.F_Kraken or not _G.F_Orca or not _G.F_Bluewhale or not _G.F_Megalodon or not _G.F_Hydra then
-						pcall(function()
-							for _, v in pairs(workspace.zones.fishing:GetChildren()) do
-								if table.find(_G.Game.Fisch.SelectZoneEvents, v.Name) then 
-									if string.find(v.Name, "Scylla") then
-										tp(CFrame.new(-2172, -11218, 7060))
-										spin(Vector3.new(180, 81.55699920654297, 180))
-									elseif v.Name == "Whales Pool" then
-										tp(CFrame.new(GetY(v)) * CFrame.new(0,5,0))
-										if Character:FindFirstChild("HumanoidRootPart") then
-											Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
-										end
-									elseif v.Name == "Orcas Pool" then
-										tp(CFrame.new(GetY(v)) * CFrame.new(0,3,50))
-										if Character:FindFirstChild("HumanoidRootPart") then
-											Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
-										end
-									elseif v.Name == "The Kraken Pool" then
-										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-									elseif v.Name == "Great White Shark" then
-										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-									elseif v.Name == "Megalodon Default" then
-										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-									elseif v.Name == "Great Hammerhead Shark" then
-										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-									elseif v.Name == "Whale Shark" then
-										tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-									else
-										continue
-									end
-								end
-							end
-						end)
+				pcall(function()
+					PlayerGui.reel.bar.playerbar.Size = UDim2.new(1, 0, 1, 0)
+					if PlayerGui.reel then
+						game:GetService("ReplicatedStorage").events["reelfinished "]:FireServer(100,true)
 					end
-				end
+				end)
 			end
-		end
-	end)
-	task.spawn(function()
-		while task.wait() do
-			pcall(function()
-				PlayerGui.reel.bar.playerbar.Size = UDim2.new(1, 0, 1, 0)
-			end)
 		end
 	end)
 	task.spawn(function()
@@ -5320,190 +5542,6 @@ elseif Fisch then
 				end
 			end)
 		end
-	end)
-	getgenv().First = {
-		Orca = false,
-		Megalodon = false,
-		LoveEel = false,
-		Merchant = false,
-		Meteor = false,
-		GWS = false,
-		WS = false,
-		GHS = false,
-		Kraken = false,
-		Sunken = false,
-		wp = false,
-		sc = false
-	}
-	function sendEventNotification(zoneName, webhooks)
-		local currentTime = os.date("%H:%M:%S")
-		local maxPlayers = 15
-		local success = sendwebhook(webhooks, {
-			["content"] = "",
-			["embeds"] = {
-				{
-					["id"] = 661605297,
-					["title"] = "Events",
-					["description"] = zoneName .. "\n```" .. _jobid .. "```" .. "\nจำนวนผู้เล่น: " .. _allplayers .. "/" .. maxPlayers,
-					["color"] = 16777215,
-					["fields"] = {},
-					["thumbnail"] = {
-						["url"] = "https://cdn.discordapp.com/attachments/1221930856394919937/1336015603420364880/20250131_095628_0000.png"
-					},
-					["footer"] = {
-						["text"] = "Fetching Notify\n" .. currentTime,
-						["icon_url"] = "https://cdn.discordapp.com/attachments/1221930856394919937/1336015603420364880/20250131_095628_0000.png"
-					}
-				}
-			}
-		})
-	end
-	task.spawn(function()
-		if not getgenv().First.Orca then
-			local Orca1 = FishingZone:FindFirstChild("Orcas Pool")
-			if Orca1 then
-				getgenv().First.Orca = true
-				sendEventNotification(Orca1.Name, "https://discord.com/api/webhooks/1338519203325415496/Qaa356uyHqBUvxnh4nVkK8HCZUo0XrWfCHKzqU41KfaXrQd00TustF0IihFQ2B-LHQ39")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.Megalodon then
-			local MZone = FishingZone:FindFirstChild("Megalodon Default")
-			if MZone then
-				getgenv().First.Megalodon = true
-				sendEventNotification(MZone.Name, "https://discord.com/api/webhooks/1338522854416715786/sazJhn6IzhhwDI9vQsyXHuQ-93WEKY829cUY__lQXvzc7Q583NRmheFzYbZAuy53JIV3")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.GWS then
-			local GZone = FishingZone:FindFirstChild("Great White Shark")
-			if GZone then
-				getgenv().First.GWS = true
-				sendEventNotification(GZone.Name, "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.WS then
-			local WZone = FishingZone:FindFirstChild("Whale Shark")
-			if WZone then
-				getgenv().First.WS = true
-				sendEventNotification(WZone.Name, "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.GHS then
-			local WZone = FishingZone:FindFirstChild("Great Hammerhead Shark")
-			if WZone then
-				getgenv().First.GHS = true
-				sendEventNotification(WZone.Name, "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.Kraken then	
-			local KZone = FishingZone:FindFirstChild("The Kraken Pool")
-			if KZone then
-				getgenv().First.Kraken = true
-				sendEventNotification(KZone.Name, "https://discord.com/api/webhooks/1338519263887097958/n6vS90JutckcNxQvcNv9JXjxjq5GkHvFcpNAPKqMBbkH56XG7dtvPqk-zxaEkA9hK-Pw")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.wp then	
-			local KZone = FishingZone:FindFirstChild("Whales Pool")
-			if KZone then
-				getgenv().First.wp = true
-				sendEventNotification(KZone.Name, "https://discord.com/api/webhooks/1338518823204290590/ORJ097Rs241TDO0VEZMHMg6fz9xH_cEQCSGxKipnM1NlY152nkqc2TCuMwb9JcgjgQV5")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.sc then	
-			local KZone = FishingZone:FindFirstChild("Forsaken Veil - Scylla")
-			if KZone then
-				getgenv().First.sc = true
-				sendEventNotification(KZone.Name, "https://discord.com/api/webhooks/1348366723874553968/yhZkVhEAuTHtPI6bqDf6Q3kNAMXcFbC1-qLV2T9G0DGJjSEyP2RSTqFyV_wnEU3KR81C")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.Merchant then
-			local Merc = workspace:FindFirstChild("Merchant Boat", true)
-			if Merc then
-				getgenv().First.Merchant=true
-				sendEventNotification("Merchant", "https://discord.com/api/webhooks/1338519368799359067/Tvykx7EnLizCpMfo4fGG4nXS3yLWcuLbAxiai9VVY-OloAjH6Dd-GecNlgnuBklZT-7V")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.Sunken then
-			local met1 = workspace.ActiveChestsFolder:FindFirstChild("Pad", true)
-			if met1 then
-				getgenv().First.Sunken = true
-				sendEventNotification("Sunken Chest", "https://discord.com/api/webhooks/1338525786910756928/tdglLSAlBTqc6_W5kRRq2_qffun56i6-rS6z7NjrG195Y-NH5a_S3IglA0b6kkbBLV2r")
-			end
-		end
-	end)
-	task.spawn(function()
-		if not getgenv().First.Meteor then
-			local metoe22 = workspace.MeteorItems:FindFirstChildOfClass("Model")
-			if metoe22 then
-				getgenv().First.Meteor = true
-				sendEventNotification("Meteor", "https://discord.com/api/webhooks/1338519482343100567/9NBxTE3oELphoXGRCSbRSUNS3O5UB1ZHbjsCwSVGISsMLQHz5beZvRf9vmwqALnw5Gka")
-			end
-		end
-	end)
-	-------------------------------------------------------- Child Added
-	task.spawn(function()
-		local meteorFolder = workspace:FindFirstChild("MeteorItems")
-		if meteorFolder then
-			meteorFolder.ChildAdded:Connect(function(child)
-				if child:IsA("Model") then
-					sendEventNotification("Meteor", "https://discord.com/api/webhooks/1338519482343100567/9NBxTE3oELphoXGRCSbRSUNS3O5UB1ZHbjsCwSVGISsMLQHz5beZvRf9vmwqALnw5Gka")
-				end
-			end)
-		end
-	end)
-	task.spawn(function()
-		local meteorFolder = workspace:FindFirstChild("ActiveChestsFolder")
-		if meteorFolder then
-			meteorFolder.ChildAdded:Connect(function(child)
-				if child:IsA("Model") then
-					sendEventNotification("Sunken Chest", "https://discord.com/api/webhooks/1338525786910756928/tdglLSAlBTqc6_W5kRRq2_qffun56i6-rS6z7NjrG195Y-NH5a_S3IglA0b6kkbBLV2r")
-				end
-			end)
-		end
-	end)
-	task.spawn(function()
-		workspace.ChildAdded:Connect(function(child)
-			if child.Name == "Merchant Boat" then
-				sendEventNotification("Merchant", "https://discord.com/api/webhooks/1338525786910756928/tdglLSAlBTqc6_W5kRRq2_qffun56i6-rS6z7NjrG195Y-NH5a_S3IglA0b6kkbBLV2r")
-			end
-		end)
-	end)
-	childsendevents=function(v, web)
-		local temzone = workspace.zones:FindFirstChild("fishing")
-		if temzone then
-			temzone.ChildAdded:Connect(function(child)
-				if child.Name == v then
-					sendEventNotification(v, web)
-				end
-			end)
-		end
-	end
-	task.spawn(function()
-		childsendevents("Forsaken Veil - Scylla", "https://discord.com/api/webhooks/1348366723874553968/yhZkVhEAuTHtPI6bqDf6Q3kNAMXcFbC1-qLV2T9G0DGJjSEyP2RSTqFyV_wnEU3KR81C")
-		childsendevents("Orcas Pool", "https://discord.com/api/webhooks/1338519203325415496/Qaa356uyHqBUvxnh4nVkK8HCZUo0XrWfCHKzqU41KfaXrQd00TustF0IihFQ2B-LHQ39")
-		childsendevents("Megalodon Default", "https://discord.com/api/webhooks/1338522854416715786/sazJhn6IzhhwDI9vQsyXHuQ-93WEKY829cUY__lQXvzc7Q583NRmheFzYbZAuy53JIV3")
-		childsendevents("Great Hammerhead Shark", "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
-		childsendevents("Whale Shark", "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
-		childsendevents("Great White Shark", "https://discord.com/api/webhooks/1338519096777638031/QoYkaRrF-Cb2YnpJMmPGc2_ZX1uObKabLhOGHpf4uZOe6lSvyTQ2iN3661BfD95Lwlkj")
-		childsendevents("The Kraken Pool", "https://discord.com/api/webhooks/1338519263887097958/n6vS90JutckcNxQvcNv9JXjxjq5GkHvFcpNAPKqMBbkH56XG7dtvPqk-zxaEkA9hK-Pw")
-		childsendevents("Whales Pool", "https://discord.com/api/webhooks/1338518823204290590/ORJ097Rs241TDO0VEZMHMg6fz9xH_cEQCSGxKipnM1NlY152nkqc2TCuMwb9JcgjgQV5")
 	end)
 end
 
